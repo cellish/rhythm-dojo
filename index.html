@@ -1,0 +1,2544 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>リズム道場</title>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f6f3ee; --card:#fffdf9; --ink:#2b2a33; --mute:#77737f; --line:#e3ddd3;
+  --acc:#3d4a8f; --acc2:#e8ebf7;
+  --perfect:#2a9d6f; --good:#86b33a; --ok:#e0a800; --off:#e67e22; --miss:#d64545;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hiragino Sans","Noto Sans JP","Yu Gothic UI",system-ui,sans-serif;line-height:1.6}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);background:var(--card)}
+header h1{margin:0;font-size:20px;letter-spacing:.08em}
+header .hl,header .hr{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header .hr{gap:8px}
+.tapsel{font-size:13px;color:var(--mute);display:flex;align-items:center;gap:6px}
+.tapsel select{font:inherit;font-size:13px;font-weight:600;color:var(--ink);border:1.5px solid #bdb4a5;border-radius:8px;padding:4px 8px;background:#f0ece4;cursor:pointer}
+.seg{display:inline-flex;border:1.5px solid var(--acc);border-radius:999px;overflow:hidden}
+.seg button{border:0;background:#fff;color:var(--acc);font:inherit;font-size:14px;font-weight:600;padding:5px 16px;cursor:pointer}
+.seg button.on{background:var(--acc);color:#fff}
+header{flex-wrap:wrap}
+header h1 small{font-size:12px;color:var(--mute);font-weight:normal;margin-left:8px;letter-spacing:0}
+.btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:7px 14px;border-radius:8px;font:inherit;font-size:14px;cursor:pointer}
+.btn:hover{border-color:var(--acc)}
+.btn.primary{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.primary kbd{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.5);color:#fff}
+.btn.small{padding:3px 10px;font-size:13px}
+.wrap{max-width:980px;margin:0 auto;padding:16px 20px 60px}
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+nav.tabs button{border:1px solid var(--line);background:var(--card);padding:8px 14px;border-radius:999px;font:inherit;font-size:14px;cursor:pointer;color:var(--ink)}
+nav.tabs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:14px}
+.card h2{margin:0 0 4px;font-size:18px}
+.desc{color:var(--mute);font-size:14px;margin:0 0 14px}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px 18px;margin-bottom:16px}
+.opt label{display:block;font-size:13px;color:var(--mute);margin-bottom:3px}
+.opt select,.opt input[type=number]{width:100%;padding:7px 10px;border:1.5px solid #bdb4a5;border-radius:8px;font:inherit;font-size:15px;font-weight:600;color:var(--ink);background-color:#f0ece4}
+.opt select{appearance:none;-webkit-appearance:none;padding-right:34px;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%233d4a8f' stroke-width='2'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center}
+.opt select:hover,.opt input[type=number]:hover{border-color:var(--acc)}
+.opt select:focus,.opt input[type=number]:focus{outline:2px solid var(--acc2);border-color:var(--acc)}
+.opt select option{color:#2b2a33;background:#fff;font-weight:normal}
+.opt.wide{grid-column:1 / -1}
+.st-track{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.st-dots{display:flex;align-items:center;flex-wrap:wrap;gap:0;position:relative}
+.st-dot{width:28px;height:28px;border-radius:50%;border:1.5px solid #cfc8bb;background:#fff;font:inherit;font-size:12px;font-weight:700;color:var(--mute);cursor:pointer;padding:0;margin-right:6px;position:relative}
+.st-dot:not(:last-child)::after{content:'';position:absolute;left:100%;top:50%;width:7px;height:2px;background:#d8d1c4;margin-left:1px}
+.st-dot:hover{border-color:var(--acc);color:var(--acc)}
+.st-dot.done{background:var(--perfect);border-color:var(--perfect);color:#fff}
+.st-dot.on{box-shadow:0 0 0 3px var(--acc2),0 0 0 4.5px var(--acc);color:var(--acc);border-color:var(--acc)}
+.st-dot.done.on{color:#fff}
+.st-arrow{border:0;background:none;color:var(--acc);font-size:14px;cursor:pointer;padding:4px}
+.st-arrow:disabled{color:#ccc;cursor:default}
+.st-prog{font-size:12px;color:var(--mute);margin-left:6px}
+.st-info{font-size:14px;margin:6px 0 12px;min-height:22px}
+.st-sub{color:var(--mute);font-size:13px}
+.st-best{margin-left:10px;font-size:12px;color:var(--mute);border:1px solid var(--line);border-radius:999px;padding:1px 8px}
+.st-best.ok{color:var(--perfect);border-color:var(--perfect)}
+#optDet{margin-bottom:6px}
+#optDet summary{cursor:pointer;color:var(--acc);font-size:14px;margin-bottom:10px}
+.opnote{font-size:13px;color:var(--mute);margin-top:6px;line-height:1.7}
+.mono{font-family:ui-monospace,Menlo,monospace;color:var(--ink);letter-spacing:.05em}
+
+.opt.check label{display:flex;align-items:center;gap:6px;color:var(--ink);font-size:14px;margin-top:22px}
+.bpmrow{display:flex;gap:8px;align-items:center}
+.bpmrow input[type=range]{flex:1}
+.bpmrow input[type=number]{width:72px}
+.startrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.hint{font-size:13px;color:var(--mute)}
+kbd{border:1px solid #ccc;border-bottom-width:2px;border-radius:4px;padding:0 5px;font-size:12px;background:#fff}
+.notice{background:#fff6e0;border:1px solid #f0d79a;border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:14px}
+/* play */
+#play{display:none;text-align:center}
+#playHelp{font-size:14px}
+#segText{font-size:30px;font-weight:700;margin:6px 0 0;min-height:44px}
+#segSub{font-size:15px;color:var(--mute);min-height:24px}
+#segText.silent{color:#888}
+#segText.change{animation:pop .35s ease-out}
+@keyframes pop{0%{transform:scale(1.45)}100%{transform:scale(1)}}
+#segSub.warn{color:#d9822b;font-size:22px;font-weight:700}
+.rows{margin:20px auto 8px;display:flex;flex-direction:column;gap:12px;align-items:center}
+.row{display:flex;gap:14px;align-items:center}
+.row .rl{width:36px;font-size:12px;color:var(--mute);text-align:right}
+.dot{width:30px;height:30px;border-radius:50%;background:#e6e1d8;transition:background .06s}
+.dot.first{box-shadow:inset 0 0 0 3px #cfc8bb}
+.dot.on{background:var(--acc)}
+.dot.on.first{background:#c0392b;box-shadow:none}
+.rows.ghost .dot{opacity:.25}
+#live{font-size:44px;font-weight:700;height:60px;margin:6px 0;font-variant-numeric:tabular-nums}
+.pads{display:flex;gap:14px;justify-content:center;margin:10px 0 16px}
+.pad{flex:1;max-width:340px;height:120px;border-radius:16px;border:2px dashed #cfc8bb;background:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--mute);user-select:none;-webkit-user-select:none;touch-action:manipulation;cursor:pointer;flex-direction:column;gap:6px}
+.pad.flash{background:var(--acc2);border-color:var(--acc)}
+.pad .pl{font-size:22px;font-weight:700;color:var(--ink)}
+.prog{height:6px;background:#ece7de;border-radius:3px;overflow:hidden;margin:6px 0 12px}
+.prog div{height:100%;background:var(--acc);width:0}
+/* result */
+#result{display:none}
+.summary{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0 14px}
+.stat{flex:1;min-width:130px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.stat .k{font-size:12px;color:var(--mute)}
+.stat .v{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat .v small{font-size:13px;font-weight:normal;color:var(--mute)}
+.headline{background:#f1f3fb;border-left:4px solid var(--acc);border-radius:8px;padding:10px 14px;margin:0 0 14px}
+.headline .hd{font-size:20px;font-weight:700}
+.headline .nx{font-size:14px;color:var(--mute)}
+.stat.bad{border-color:#f0b37a;background:#fff8f0}
+.stat .v.sm{font-size:17px}
+.gauges{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:0 0 14px}
+@media (max-width:640px){.gauges{grid-template-columns:1fr}}
+.gauge .gl{font-size:13px;color:var(--mute);margin-bottom:4px}
+.gauge .gl b{color:var(--ink);font-size:16px}
+.gbar{position:relative;height:14px;border-radius:7px}
+.gbar.pos{background:linear-gradient(90deg,#f3c58f,#e9f3df 35%,#bfe3cf 50%,#e9f3df 65%,#f3c58f)}
+.gbar.stab{background:linear-gradient(90deg,#f3c58f,#f6e3a8 30%,#dcebc4 55%,#a9dcbf 80%,#7cc9a6)}
+.gbar .gc{position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:#888}
+.gbar .gm{position:absolute;top:-5px;width:14px;height:24px;margin-left:-7px;border-radius:4px;background:var(--acc);box-shadow:0 0 0 2px #fff}
+.gs{display:flex;justify-content:space-between;font-size:11px;color:var(--mute);margin-top:4px}
+details.more{margin:0 0 14px}
+details.more summary{cursor:pointer;color:var(--acc);font-size:14px;margin-bottom:6px}
+ul.comments{margin:0 0 14px;padding-left:20px}
+ul.comments li{margin:3px 0}
+canvas#chart{width:100%;height:260px;display:block;background:#fff;border:1px solid var(--line);border-radius:10px}
+.legend{font-size:12px;color:var(--mute);margin:6px 0 14px;display:flex;flex-wrap:wrap;gap:12px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.groups{margin:4px 0 16px}
+.gc-head,.gc-row{display:grid;grid-template-columns:220px 1fr 92px;gap:12px;align-items:center}
+.gc-row{padding:7px 0;border-bottom:1px solid var(--line)}
+.gc-l{font-size:14px;line-height:1.3}
+.gc-l small{display:block;font-size:11px;color:var(--mute)}
+.gc-axis{position:relative;height:18px;font-size:11px;color:var(--mute)}
+.gc-axis span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.gc-axis span:first-child{transform:none}.gc-axis span:last-child{transform:translateX(-100%)}
+.gc-track{position:relative;height:22px;background:#f3f0ea;border-radius:11px}
+.gc-zero{position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:#999}
+.gc-band{position:absolute;top:4px;bottom:4px;border-radius:7px;opacity:.9}
+.gc-dot{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 2px #fff}
+.gc-none{position:absolute;left:12px;top:2px;font-size:12px;color:var(--miss)}
+.gc-n{font-size:13px;text-align:right;line-height:1.3;font-variant-numeric:tabular-nums}
+.gc-n small{color:var(--mute);font-size:11px}
+.gc-note{font-size:12px;color:var(--mute);margin-top:6px}
+@media (max-width:640px){.gc-head,.gc-row{grid-template-columns:110px 1fr 70px;gap:8px}}
+table.groups{border-collapse:collapse;width:100%;font-size:14px;margin-bottom:14px}
+table.groups th,table.groups td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:right}
+table.groups th:first-child,table.groups td:first-child{text-align:left}
+table.groups th{font-size:12px;color:var(--mute);font-weight:normal}
+.echo-round{display:flex;align-items:center;gap:10px;margin:6px 0}
+.echo-round .rn{width:58px;font-size:13px;color:var(--mute)}
+.echo-bar{flex:1;display:flex;gap:3px}
+.echo-beat{flex:1;height:34px;background:#fff;border:1px solid var(--line);border-radius:6px;position:relative}
+.mk{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%}
+.mk.tg{width:2px;height:24px;margin:-12px 0 0 -1px;border-radius:0;background:#bbb}
+.mk.miss{border:2px solid var(--miss);background:transparent}
+.mk.extra{background:transparent;color:#999;font-size:13px;line-height:12px;text-align:center}
+.echo-pat{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--mute);width:200px;white-space:nowrap}
+.hist{font-size:13px;width:100%;border-collapse:collapse}
+.hist td,.hist th{padding:4px 6px;border-bottom:1px solid var(--line);text-align:right}
+.hist th{color:var(--mute);font-weight:normal;font-size:12px}
+.hist td:first-child,.hist th:first-child{text-align:left}
+footer.copy{font-size:12px;color:#9a958c;text-align:center;line-height:1.7;margin:28px 0 0}
+/* calib panel */
+#calibPanel{display:none}
+.calibval{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums}
+/* tempo quiz */
+.qbtns{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.qbtns .btn{font-size:16px;padding:10px 18px}
+#qMsg{font-size:18px;font-weight:600;min-height:30px}
+.qlog{font-size:13px;color:var(--mute)}
+.ok-t{color:var(--perfect)} .ng-t{color:var(--miss)}
+</style>
+</head>
+<body>
+<header>
+  <div class="hl"><h1>リズム道場<small>Rhythm Dojo</small></h1><div class="seg" id="edSeg"></div></div>
+  <div class="hr"><label class="tapsel">叩いた音 <select id="tapSel"></select></label><button class="btn small" id="calibBtn">遅延補正: 未設定</button></div>
+</header>
+<div class="wrap">
+  <nav class="tabs" id="tabs"></nav>
+
+  <section class="card" id="calibPanel">
+    <h2>遅延補正</h2>
+    <p class="desc">キーボードや音の出力の遅れを差し引くための値です。100 BPM のクリックに合わせて16回叩くと、そのずれの中央値を補正値にします。<br>
+    ※叩く人の癖（前のめりなど）も一緒に補正されるため、補正後の結果は「100 BPMの4分音符を叩いたときの自分」を基準にしたずれになります。癖そのものを見たいときは補正を 0 にしてください。</p>
+    <div class="startrow" style="margin-bottom:12px">
+      <span class="calibval" id="calibVal">0 ms</span>
+      <button class="btn small" data-adj="-5">−5</button>
+      <button class="btn small" data-adj="5">＋5</button>
+      <button class="btn small" id="calibZero">0 にする</button>
+    </div>
+    <div class="startrow">
+      <button class="btn primary" id="calibRun">測定する</button>
+      <button class="btn" id="calibClose">閉じる</button>
+      <span class="hint" id="calibMsg"></span>
+    </div>
+  </section>
+
+  <section class="card" id="setup">
+    <h2 id="mTitle"></h2>
+    <p class="desc" id="mDesc"></p>
+    <div id="calibNotice" class="notice" style="display:none">はじめに右上の「遅延補正」で測定しておくと、判定が正確になります。</div>
+    <div id="steps" style="display:none"></div>
+    <details id="optDet" open><summary id="optSum">くわしく設定する（自由に組み合わせる）</summary><div class="opts" id="opts"></div></details>
+    <div class="startrow" id="extraRow" style="display:none;margin-bottom:12px"></div>
+    <div class="startrow" id="startRow">
+      <button class="btn primary" id="startBtn">スタート</button>
+      <span class="hint" id="keyHint"></span>
+    </div>
+    <div id="quiz" style="display:none"></div>
+  </section>
+
+  <section class="card" id="play">
+    <div class="prog"><div id="progBar"></div></div>
+    <div id="segText"></div>
+    <div id="segSub"></div>
+    <canvas id="cond" width="260" height="170" style="display:none;margin:10px auto 0"></canvas>
+    <div class="rows" id="rows"></div>
+    <div id="live">&nbsp;</div>
+    <div class="pads" id="pads"></div>
+    <p class="hint" id="playHelp" style="margin:0 0 12px"></p>
+    <button class="btn" id="stopBtn">中止（<kbd>Esc</kbd>）</button>
+  </section>
+
+  <section class="card" id="result">
+    <h2 id="rTitle">結果</h2>
+    <div class="summary" id="summary"></div>
+    <div class="headline" id="headline"></div>
+    <div class="gauges" id="gauges"></div>
+    <details class="more"><summary>くわしい説明を見る</summary><ul class="comments" id="comments"></ul></details>
+    <canvas id="chart"></canvas>
+    <div class="legend">
+      <span><i style="background:var(--perfect)"></i>±20ms以内</span>
+      <span><i style="background:var(--good)"></i>±40ms以内</span>
+      <span><i style="background:var(--ok)"></i>±70ms以内</span>
+      <span><i style="background:var(--off)"></i>それ以上</span>
+      <span style="color:var(--miss)">× 叩けなかった音</span>
+      <span>＋は遅れ（後ろ）、−は早い（前のめり）。線は直近5打の移動平均。<span id="shadeLbl"></span></span>
+    </div>
+    <div class="groups" id="groups"></div>
+    <div id="extra"></div>
+    <div class="startrow" style="margin-top:10px">
+      <button class="btn primary" id="againBtn">もう一度（<kbd>Enter</kbd>）</button>
+      <button class="btn primary" id="nextStepBtn" style="display:none"></button>
+      <button class="btn" id="backBtn">設定に戻る</button>
+    </div>
+  </section>
+
+  <section class="card" id="histCard">
+    <h2 style="font-size:15px">最近の記録（このモード）</h2>
+    <div id="hist" class="hint">まだ記録がありません。</div>
+  </section>
+  <footer class="copy">© 2026 jun　All rights reserved.<br>外部のライブラリ・フォント・録音素材は使っていません（音はすべてブラウザ内で合成）。収録しているリズムの型は伝統的・慣用的なもの、または作者自身の作品です。</footer>
+</div>
+
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+let calib = store.get('rd.calib', null);   // ms
+let tapSound = store.get('rd.tapsnd', true);
+const fmt = (d, p=0) => { const r = +d.toFixed(p); return (r > 0 ? '+' : r < 0 ? '−' : '±') + Math.abs(r).toFixed(p); };
+
+/* ================= Audio ================= */
+let ctx = null, master = null, noiseBuf = null;
+function ac(){
+  if(!ctx){
+    ctx = new (window.AudioContext || window.webkitAudioContext)({latencyHint:'interactive'});
+    noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+    const ch = noiseBuf.getChannelData(0); for(let i=0;i<ch.length;i++) ch[i] = Math.random()*2 - 1;
+    newMaster();
+  }
+  if(ctx.state === 'suspended') ctx.resume();
+  return ctx;
+}
+function newMaster(){
+  if(master){ try{ master.disconnect(); }catch(e){} }
+  master = ctx.createGain(); master.gain.value = 0.5;
+  const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 14000;
+  master.connect(lp).connect(ctx.destination);
+}
+const SOUNDS = {
+  accent:{f:1568, g:.55, type:'square',   d:.035},
+  beat:  {f:1046, g:.40, type:'square',   d:.03},
+  sub:   {f:784,  g:.14, type:'square',   d:.02},
+  A:     {f:1318, g:.45, type:'triangle', d:.06},
+  B:     {f:440,  g:.60, type:'triangle', d:.07},
+  bell:  {f:2093, g:.30, type:'sine',     d:.35},
+  pat:   {f:900,  g:.85, type:'sine',     d:.09, drop:1.6},
+  hat:   {noise:true, hp:7000, g:.55, d:.05},
+  ride:  {noise:true, hp:4500, g:.30, d:.20, ping:5274},
+  bass:  {f:98,   g:.95, type:'triangle', d:.30},
+  comp:  {chord:[293.7,349.2,440,523.3], g:.16, type:'triangle', d:.22},
+  lead:  {f:1175, g:.42, type:'triangle', d:.07},
+  tap0:  {f:660,  g:.45, type:'sine',     d:.05, drop:1.5},
+  tap1:  {f:430,  g:.55, type:'sine',     d:.06, drop:1.5}
+};
+function playSound(t, name, freq){
+  if(name === 'bass'){ pluck(t, freq || 41, 'bass'); return; }
+  if(name === 'lead'){ pluck(t, freq || leadNote(), 'lead'); return; }
+  if(name === 'comp'){ (Array.isArray(freq) ? freq : chordTones()).forEach(m => pluck(t, m, 'comp')); return; }
+  if(name === 'kick'){ kick(t, 0.95); return; }
+  if(name === 'snare'){ snare(t, 0.6); return; }
+  if(name === 'ghost'){ snare(t, 0.13); return; }
+  if(name === 'hat16'){ metal(t, 0.04, 0.16, 7500); return; }
+  if(name === 'shk'){ const n = ctx.createBufferSource(); n.buffer = noiseBuf; const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 6500;
+    const ga = ctx.createGain(); ga.gain.setValueAtTime(0.0001, t); ga.gain.linearRampToValueAtTime(0.16, t + 0.01); ga.gain.exponentialRampToValueAtTime(0.0001, t + 0.06);
+    n.connect(hp).connect(ga).connect(master); n.start(t, Math.random()*0.5); n.stop(t + 0.08); return; }
+  if(name === 'congaO'){ conga(t, 220, false); return; }
+  if(name === 'congaS'){ conga(t, 330, true); return; }
+  if(name === 'clv'){ ring(t, 2500, 60, 12, 0.12); tone(t, 2500, 'sine', 0.18, 0.06); return; }
+  if(name === 'gtr'){ ring(t, 1500, 3, 3.5, 0.045, 0.006); tone(t, 196, 'triangle', 0.18, 0.05); return; }
+  if(name === 'pnoB'){ piano(t, freq, 0.26); return; }
+  if(name === 'pno'){ (freq || []).forEach(m => piano(t, m, 0.10)); return; }
+  if(name === 'pnoS'){ (freq || []).forEach(m => piano(t, m, 0.05)); return; }
+  if(name === 'mel'){ piano(t, freq || 72, 0.20); return; }
+  if(name === 'hat'){ metal(t, 0.06, 0.32, 7000); return; }
+  if(name === 'ride'){ metal(t, 0.45, 0.16, 5200, 5274); return; }
+  const s = SOUNDS[name]; if(!s) return;
+  if(s.noise){
+    const src = ctx.createBufferSource(); src.buffer = noiseBuf;
+    const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = s.hp;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(s.g, t+0.002); g.gain.exponentialRampToValueAtTime(0.0001, t+s.d);
+    src.connect(hp).connect(g).connect(master);
+    src.start(t, Math.random()*0.5); src.stop(t+s.d+0.02);
+    if(s.ping){ const o = ctx.createOscillator(), g2 = ctx.createGain(); o.frequency.value = s.ping; o.type = 'sine';
+      g2.gain.setValueAtTime(0.0001, t); g2.gain.linearRampToValueAtTime(0.06, t+0.002); g2.gain.exponentialRampToValueAtTime(0.0001, t+s.d*1.5);
+      o.connect(g2).connect(master); o.start(t); o.stop(t+s.d*1.5+0.02); }
+    return;
+  }
+  if(s.chord){ s.chord.forEach(f => playTone(t, s, f)); return; }
+  playTone(t, s, freq || s.f);
+}
+function playTone(t, s, f){
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = s.type;
+  if(s.drop){ o.frequency.setValueAtTime(f*s.drop, t); o.frequency.exponentialRampToValueAtTime(f, t+0.02); }
+  else o.frequency.value = f;
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.linearRampToValueAtTime(s.g, t+0.002);
+  g.gain.exponentialRampToValueAtTime(0.0001, t+s.d);
+  o.connect(g).connect(master);
+  o.start(t); o.stop(t+s.d+0.02);
+}
+// time (in AudioContext seconds) of what is being heard right now
+function heardNow(){
+  if(ctx.getOutputTimestamp){
+    const o = ctx.getOutputTimestamp();
+    if(o && o.performanceTime > 0) return o.contextTime + (performance.now() - o.performanceTime)/1000;
+  }
+  return ctx.currentTime - (ctx.outputLatency || ctx.baseLatency || 0);
+}
+const evToHeard = ts => heardNow() - (performance.now() - ts)/1000;
+
+/* ---- 楽器音（合成） ---- */
+const midiF = m => 440 * Math.pow(2, (m - 69)/12);
+const ksCache = {};
+// Karplus-Strong plucked string
+function ksBuffer(key, freq, dur, damp, bright){
+  if(ksCache[key]) return ksCache[key];
+  const sr = ctx.sampleRate, N = Math.max(2, Math.round(sr/freq)), len = Math.floor(sr*dur);
+  const buf = ctx.createBuffer(1, len, sr), d = buf.getChannelData(0), ring = new Float32Array(N);
+  let prev = 0;
+  for(let i=0;i<N;i++){ const w = Math.random()*2 - 1; prev += bright*(w - prev); ring[i] = prev; }
+  let idx = 0, mx = 0;
+  for(let i=0;i<len;i++){
+    const a = ring[idx], b = ring[(idx+1) % N];
+    d[i] = a; ring[idx] = damp * 0.5 * (a + b); idx = (idx + 1) % N;
+    if(Math.abs(a) > mx) mx = Math.abs(a);
+  }
+  if(mx > 0) for(let i=0;i<len;i++) d[i] /= mx;
+  return ksCache[key] = buf;
+}
+function pluck(t, midi, kind){
+  const f = midiF(midi);
+  const P = kind === 'bass' ? {dur:1.4, damp:0.998, bright:0.10, lp:420, g:1.25, len:0.45}
+          : kind === 'lead' ? {dur:0.8, damp:0.994, bright:0.75, lp:7000, g:0.36, len:0.22}
+          :                   {dur:0.9, damp:0.993, bright:0.45, lp:3000, g:0.17, len:0.26};
+  const src = ctx.createBufferSource(); src.buffer = ksBuffer(kind + midi, f, P.dur, P.damp, P.bright);
+  const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = P.lp; lp.Q.value = 0.7;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(P.g, t); g.gain.setValueAtTime(P.g, t + P.len); g.gain.exponentialRampToValueAtTime(0.0001, t + P.len + 0.12);
+  src.connect(lp).connect(g).connect(master);
+  src.start(t); src.stop(t + P.len + 0.15);
+  if(kind === 'bass'){ // body: soft fundamental + finger thump
+    const o = ctx.createOscillator(), g2 = ctx.createGain(); o.type = 'sine'; o.frequency.value = f;
+    g2.gain.setValueAtTime(0.0001, t); g2.gain.linearRampToValueAtTime(0.55, t + 0.008); g2.gain.exponentialRampToValueAtTime(0.0001, t + P.len + 0.08);
+    o.connect(g2).connect(master); o.start(t); o.stop(t + P.len + 0.1);
+    const o2 = ctx.createOscillator(), g4 = ctx.createGain(); o2.type = 'sine'; o2.frequency.value = f*2;   // 小さいスピーカーでも音程が分かるよう2倍音を少し
+    g4.gain.setValueAtTime(0.0001, t); g4.gain.linearRampToValueAtTime(0.18, t + 0.008); g4.gain.exponentialRampToValueAtTime(0.0001, t + P.len*0.8);
+    o2.connect(g4).connect(master); o2.start(t); o2.stop(t + P.len);
+    const th = ctx.createOscillator(), g3 = ctx.createGain(); th.frequency.setValueAtTime(120, t); th.frequency.exponentialRampToValueAtTime(45, t + 0.03);
+    g3.gain.setValueAtTime(0.0001, t); g3.gain.linearRampToValueAtTime(0.25, t + 0.002); g3.gain.exponentialRampToValueAtTime(0.0001, t + 0.04);
+    th.connect(g3).connect(master); th.start(t); th.stop(t + 0.05);
+  }
+}
+// 808-style metallic cymbal
+function metal(t, dur, gv, hpF, bell){
+  const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 9500; bp.Q.value = 0.8;
+  const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = hpF;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(gv, t + 0.001); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  [2, 3, 4.16, 5.43, 6.79, 8.21].forEach(r => { const o = ctx.createOscillator(); o.type = 'square'; o.frequency.value = 40*r*1.15; o.connect(bp); o.start(t); o.stop(t + dur + 0.02); });
+  bp.connect(hp).connect(g).connect(master);
+  if(bell){ const o = ctx.createOscillator(), g2 = ctx.createGain(); o.type = 'sine'; o.frequency.value = bell;
+    g2.gain.setValueAtTime(0.0001, t); g2.gain.linearRampToValueAtTime(0.035, t + 0.002); g2.gain.exponentialRampToValueAtTime(0.0001, t + dur*1.3);
+    o.connect(g2).connect(master); o.start(t); o.stop(t + dur*1.3 + 0.02); }
+}
+// walking bass over an F blues
+const BLUES = [[41,'7'],[46,'7'],[41,'7'],[41,'7'],[46,'7'],[46,'7'],[41,'7'],[38,'7'],[43,'m7'],[48,'7'],[41,'7'],[48,'7']];
+let bluesBar = 0, walkQ = [], curChord = BLUES[0];
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const fitBass = m => { while(m > 43) m -= 12; while(m < 28) m += 12; return m; };   // E1〜G2（ウッドベースの低い音域）
+function resetWalk(){ bluesBar = 0; walkQ = []; curChord = BLUES[0]; }
+function walk(){
+  if(!walkQ.length){
+    const [r, q] = BLUES[bluesBar % 12], [nr] = BLUES[(bluesBar + 1) % 12];
+    curChord = BLUES[bluesBar % 12]; bluesBar++;
+    const third = q === 'm7' ? 3 : 4;
+    const shapes = [[0, third, 7], [0, 2, third], [0, 7, 10], [0, 12, 10], [0, third, 5], [0, -2, -5]];
+    const sh = pick(shapes);
+    const n4 = fitBass(nr) + pick([-1, 1, 1, 2]);
+    walkQ = [fitBass(r), fitBass(r) + sh[1], fitBass(r) + sh[2], n4].map(fitBass);
+  }
+  return walkQ.shift();
+}
+const chordTones = () => { const [r, q] = curChord, third = q === 'm7' ? 3 : 4; return [r + 24 + third, r + 24 + 10, r + 36 + 2].map(m => m > 76 ? m - 12 : m); };
+const leadNote = () => { let m = curChord[0] + 36; while(m > 84) m -= 12; return m; };   // C5〜C6あたり
+
+/* ---- 叩いた音（打楽器の合成） ---- */
+const TAP_KINDS = [['none','なし'],['pon','ポン（シンプル）'],['wood','ウッドブロック'],['clave','クラベス'],['rim','リムショット'],['cow','カウベル'],['shaker','シェイカー'],['marimba','マリンバ'],['tri','トライアングル']];
+// 共鳴するフィルターに短い雑音を入れて「コン」という鳴りを作る
+function ring(t, f, q, g, dur, src){
+  const n = ctx.createBufferSource(); n.buffer = noiseBuf;
+  const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = q;
+  const ga = ctx.createGain(); ga.gain.setValueAtTime(g, t); ga.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  const env = ctx.createGain(); env.gain.setValueAtTime(1, t); env.gain.setValueAtTime(0, t + (src || 0.003));
+  n.connect(env).connect(bp).connect(ga).connect(master); n.start(t, Math.random()*0.5); n.stop(t + dur + 0.02);
+}
+function tone(t, f, type, g, dur, drop){
+  const o = ctx.createOscillator(), ga = ctx.createGain(); o.type = type;
+  if(drop){ o.frequency.setValueAtTime(f*drop, t); o.frequency.exponentialRampToValueAtTime(f, t + 0.012); } else o.frequency.value = f;
+  ga.gain.setValueAtTime(0.0001, t); ga.gain.linearRampToValueAtTime(g, t + 0.0015); ga.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(ga).connect(master); o.start(t); o.stop(t + dur + 0.02);
+}
+function percussion(t, kind, layer){
+  const k = layer === 1 ? 0.75 : 1;   // 右手（2つ目のパッド）は少し低く
+  switch(kind){
+    case 'pon': tone(t, 660*k, 'sine', 0.45, 0.05, 1.5); break;
+    case 'wood': ring(t, 1050*k, 28, 9, 0.09); ring(t, 1650*k, 22, 4, 0.05); tone(t, 1050*k, 'sine', 0.25, 0.04, 1.3); break;
+    case 'clave': ring(t, 2500*k, 60, 14, 0.12); tone(t, 2500*k, 'sine', 0.22, 0.06); break;
+    case 'rim': ring(t, 1800*k, 6, 5, 0.05, 0.006); tone(t, 420*k, 'triangle', 0.35, 0.04, 1.4); ring(t, 5000, 2, 1.5, 0.03, 0.01); break;
+    case 'cow': { const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 900*k; bp.Q.value = 3;
+      const ga = ctx.createGain(); ga.gain.setValueAtTime(0.0001, t); ga.gain.linearRampToValueAtTime(0.5, t + 0.002); ga.gain.exponentialRampToValueAtTime(0.08, t + 0.05); ga.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
+      [540, 800].forEach(f => { const o = ctx.createOscillator(); o.type = 'square'; o.frequency.value = f*k; o.connect(bp); o.start(t); o.stop(t + 0.32); });
+      bp.connect(ga).connect(master); break; }
+    case 'shaker': { const n = ctx.createBufferSource(); n.buffer = noiseBuf; const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 6000*k;
+      const ga = ctx.createGain(); ga.gain.setValueAtTime(0.0001, t); ga.gain.linearRampToValueAtTime(0.35, t + 0.008); ga.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+      n.connect(hp).connect(ga).connect(master); n.start(t, Math.random()*0.5); n.stop(t + 0.09); break; }
+    case 'marimba': { const f = 523.25*k; tone(t, f, 'sine', 0.5, 0.45); tone(t, f*3.93, 'sine', 0.12, 0.08); tone(t, f*9.2, 'sine', 0.04, 0.03); ring(t, f*2, 8, 1.2, 0.02); break; }
+    case 'tri': [1, 2.76, 5.4, 8.9].forEach((r, i) => tone(t, 1250*k*r, 'sine', [0.16, 0.08, 0.05, 0.03][i], 0.9 - i*0.15)); ring(t, 7000, 4, 1, 0.02); break;
+  }
+}
+let tapKind = store.get('rd.tapkind', null);
+if(tapKind === null) tapKind = store.get('rd.tapsnd', true) ? 'pon' : 'none';
+
+/* ================= Plan helpers ================= */
+function Plan(bpm){
+  return {bpm, events:[], targets:[], segments:[], vis:[], rows:[{n:4}],
+          layers:[{id:0, label:'どのキーでも / ここをタップ'}], dur:0, shade:[], bands:[]};
+}
+function addBar(p, t, beats, spb, o={}){
+  const {show=true, sound=true, row=0, quiet=false} = o;
+  for(let i=0;i<beats;i++){
+    const tt = t + i*spb;
+    if(sound) p.events.push({t:tt, sound: quiet ? 'sub' : (i===0 ? 'accent' : 'beat')});
+    p.vis.push({t:tt, row, idx:i, show});
+  }
+}
+const winOf = (gapBeats, spb, cap=0.15) => Math.min(0.45*gapBeats*spb, cap);
+
+/* ================= Modes ================= */
+const BPM_OPT = def => ({key:'bpm', label:'テンポ（BPM）', type:'bpm', def});
+
+const VALUES = {
+  q:  {name:'4分音符', pos:[0], gap:1, sub:1, hint:'クリックと同時に叩く'},
+  e:  {name:'8分音符', pos:[0,.5], gap:.5, sub:2, groups:['表（拍頭）','裏'], hint:'1拍に2回、均等に'},
+  t:  {name:'3連符', pos:[0,1/3,2/3], gap:1/3, sub:3, groups:['1つ目','2つ目','3つ目'], hint:'1拍に3回、均等に'},
+  s:  {name:'16分音符', pos:[0,.25,.5,.75], gap:.25, sub:4, groups:['1つ目（拍頭）','2つ目','3つ目（8分裏）','4つ目'], hint:'1拍に4回、均等に'},
+  off:{name:'裏拍（8分の裏）', pos:[.5], gap:1, sub:2, hint:'クリックとクリックのちょうど真ん中で叩く'},
+  bb: {name:'2拍目と4拍目', pos:[0], gap:1, sub:1, hint:'バックビート。1・3拍目は叩かない'}
+};
+
+/* ---- リズム模倣のレベル ---- */
+const isTripF = f => Math.abs(f-1/3) < 1e-6 || Math.abs(f-2/3) < 1e-6;
+const has16 = c => c.some(f => f === .25 || f === .75);
+const isTrip = c => c.some(isTripF);
+const offStart = c => c.length > 0 && c[0] !== 0;
+const ties = cs => { let n = 0; for(let i=0;i<3;i++) if(cs[i].length && Math.max(...cs[i]) >= .5 && !cs[i+1].includes(0)) n++; return n; };
+const count = (cs, f) => cs.filter(f).length;
+const S16 = [[0,.25,.5,.75],[0,.5,.75],[0,.25,.5]];
+const TRI = [[0,1/3,2/3],[0,1/3,2/3],[0,2/3],[1/3,2/3],[0,1/3]];
+const ECHO_LEVELS = [
+  {name:'4分と8分（休符なし）', desc:'4分音符と8分音符だけ。拍の頭は必ず鳴ります。', gap:.5,
+   cells:[[0],[0],[0,.5],[0,.5]], ok:cs => cs.some(c => c.length === 2), ex:[[0],[0,.5],[0],[0,.5]]},
+  {name:'裏拍・休符入り', desc:'8分の裏だけの拍や、休みの拍が入ります。', gap:.5,
+   cells:[[0],[0,.5],[0,.5],[.5],[]], ok:cs => cs.some(c => !c.length || offStart(c)), ex:[[0,.5],[.5],[0],[]]},
+  {name:'16分が1か所', desc:'8分中心のリズムに、16分音符を含む拍が1つだけ入ります。', gap:.25,
+   cells:[[0],[0,.5],[0,.5],[.5],...S16], ok:cs => count(cs, has16) === 1, ex:[[0],[0,.5],[0,.25,.5,.75],[0]]},
+  {name:'16分多め', desc:'16分音符を含む拍が2つ以上。付点8分＋16分の形も出ます。', gap:.25,
+   cells:[[0],[0,.5],[.5],...S16,[0,.75],[.25,.5,.75]], ok:cs => count(cs, has16) >= 2, ex:[[0,.25,.5,.75],[0,.5,.75],[0,.75],[0]]},
+  {name:'シンコペーション', desc:'拍の頭が鳴らない拍が2つ以上あります（16分の裏から入る形など）。', gap:.25,
+   cells:[[0],[0,.5],[.5],[.25,.75],[.5,.75],[.75],[0,.25,.75],[.25,.5],[0,.75],[0,.25]], ok:cs => count(cs, offStart) >= 2, ex:[[0],[.25,.75],[0,.5],[.5,.75]]},
+  {name:'タイで拍をまたぐ', desc:'拍の後半で鳴った音が次の拍まで伸び、次の拍の頭が鳴らない形が2か所以上あります。', gap:.25,
+   cells:[[0],[0,.5],[.5],[.25,.75],[.5,.75],[.75],[0,.25,.75],[.25,.5],[0,.75],[]], ok:cs => ties(cs) >= 2, ex:[[0,.75],[.5],[.5,.75],[.25,.5]]},
+  {name:'3連', desc:'3連符を含む拍が2つ以上。4分・8分とも組み合わさります。', gap:1/3,
+   cells:[[0],[0,.5],...TRI,[]], ok:cs => count(cs, isTrip) >= 2, ex:[[0,1/3,2/3],[0],[0,2/3],[0,.5]]},
+  {name:'3連と16分の混在', desc:'3連符と16分音符が同じ小節に出てきます。いちばん難しいレベルです。', gap:.25,
+   cells:[[0],[0,.5],[.5],...S16,[0,.75],...TRI], ok:cs => cs.some(isTrip) && cs.some(has16), ex:[[0,1/3,2/3],[0,.25,.5,.75],[0,2/3],[0,.5]]}
+];
+const patText = cells => cells.map(c => {
+  const slots = isTrip(c) ? [0,1/3,2/3] : [0,.25,.5,.75];
+  return slots.map(s => c.some(f => Math.abs(f-s) < 1e-6) ? '●' : '・').join('');
+}).join(' | ');
+
+/* ---- 各モードのステップ（易しい順） ---- */
+const ST = (title, sub, o) => ({title, sub, o});
+const STEPS = {
+  steady:[
+    ST('4分音符', '基本', {bpm:100, value:'q', meter:'4', bars:'8', subclick:false}),
+    ST('8分音符', '細分クリックあり', {bpm:100, value:'e', meter:'4', bars:'8', subclick:true}),
+    ST('8分音符', 'クリックは4分だけ', {bpm:100, value:'e', meter:'4', bars:'8', subclick:false}),
+    ST('裏拍', '8分の裏だけ', {bpm:100, value:'off', meter:'4', bars:'8', subclick:false}),
+    ST('3連符', '細分クリックあり', {bpm:90, value:'t', meter:'4', bars:'8', subclick:true}),
+    ST('3連符', 'クリックは4分だけ', {bpm:90, value:'t', meter:'4', bars:'8', subclick:false}),
+    ST('16分音符', '細分クリックあり', {bpm:80, value:'s', meter:'4', bars:'8', subclick:true}),
+    ST('16分音符', 'クリックは4分だけ', {bpm:80, value:'s', meter:'4', bars:'8', subclick:false}),
+    ST('2拍目と4拍目', 'バックビート', {bpm:100, value:'bb', meter:'4', bars:'8', subclick:false}),
+    ST('4分音符', '遅いテンポ', {bpm:60, value:'q', meter:'4', bars:'8', subclick:false}),
+    ST('裏拍', '遅いテンポ', {bpm:70, value:'off', meter:'4', bars:'8', subclick:false}),
+    ST('16分音符', '速め・長め', {bpm:110, value:'s', meter:'4', bars:'16', subclick:false})
+  ],
+  vanish:[
+    ST('無音1小節', 'クリック4小節のあと', {bpm:96, on:'4', off:'1', cycles:'3', grow:false}),
+    ST('無音2小節', '', {bpm:96, on:'2', off:'2', cycles:'4', grow:false}),
+    ST('無音4小節', '', {bpm:96, on:'2', off:'4', cycles:'4', grow:false}),
+    ST('無音がのびる', '1→2→4→8小節', {bpm:96, on:'2', off:'1', cycles:'4', grow:true}),
+    ST('無音8小節', '', {bpm:96, on:'2', off:'8', cycles:'3', grow:false}),
+    ST('遅いテンポ', '無音4小節', {bpm:66, on:'2', off:'4', cycles:'4', grow:false}),
+    ST('とても遅いテンポ', '無音4小節', {bpm:52, on:'2', off:'4', cycles:'3', grow:false}),
+    ST('速いテンポ', '無音8小節', {bpm:140, on:'2', off:'8', cycles:'3', grow:false})
+  ],
+  ladder:[
+    ST('4→8→3連→16', '細分クリックあり・4小節ずつ', {bpm:70, seq:'basic', per:'4', bell:true, subclick:true}),
+    ST('4→8→3連→16', '4小節ずつ', {bpm:70, seq:'basic', per:'4', bell:true, subclick:false}),
+    ST('4→8→3連→16', '2小節ずつ', {bpm:80, seq:'basic', per:'2', bell:true, subclick:false}),
+    ST('上がって下りる', '5連あり・2小節ずつ', {bpm:72, seq:'full', per:'2', bell:true, subclick:false}),
+    ST('4→8→3連→16', '1小節ずつ', {bpm:80, seq:'basic', per:'1', bell:true, subclick:false}),
+    ST('ランダム', '2小節ずつ', {bpm:80, seq:'random', per:'2', bell:true, subclick:false}),
+    ST('ランダム', '5連・6連あり', {bpm:72, seq:'random5', per:'2', bell:true, subclick:false}),
+    ST('ランダム', '1小節ずつ・ベルなし', {bpm:88, seq:'random', per:'1', bell:false, subclick:false})
+  ],
+  poly:[
+    ST('左3 : 右2', 'ガイド左右とも', {bpm:60, ratio:'3:2', guide:'both', bars:'8', fade:false}),
+    ST('左2 : 右3', '左右を入れかえ', {bpm:60, ratio:'2:3', guide:'both', bars:'8', fade:false}),
+    ST('3 : 2', '後半ガイド少なめ', {bpm:72, ratio:'3:2', guide:'both', bars:'8', fade:true}),
+    ST('3 : 2', 'ガイドは1拍目だけ', {bpm:72, ratio:'3:2', guide:'down', bars:'8', fade:false}),
+    ST('左4 : 右3', 'ガイド左右とも', {bpm:60, ratio:'4:3', guide:'both', bars:'8', fade:false}),
+    ST('左3 : 右4', '後半ガイド少なめ', {bpm:60, ratio:'3:4', guide:'both', bars:'8', fade:true}),
+    ST('4 : 3', 'ガイドは1拍目だけ', {bpm:66, ratio:'4:3', guide:'down', bars:'8', fade:false}),
+    ST('左5 : 右4', 'ガイド左右とも', {bpm:50, ratio:'5:4', guide:'both', bars:'8', fade:true}),
+    ST('左5 : 右3', 'ガイド左右とも', {bpm:50, ratio:'5:3', guide:'both', bars:'8', fade:true})
+  ],
+  echo:[
+    ST('Lv1', '4分と8分', {bpm:80, level:'1', rounds:'8', auto:false, showpat:false}),
+    ST('Lv2', '裏拍・休符入り', {bpm:80, level:'2', rounds:'8', auto:false, showpat:false}),
+    ST('Lv3', '16分が1か所', {bpm:84, level:'3', rounds:'8', auto:false, showpat:false}),
+    ST('Lv4', '16分多め', {bpm:84, level:'4', rounds:'8', auto:false, showpat:false}),
+    ST('Lv5', 'シンコペーション', {bpm:84, level:'5', rounds:'8', auto:false, showpat:false}),
+    ST('Lv6', 'タイで拍をまたぐ', {bpm:84, level:'6', rounds:'8', auto:false, showpat:false}),
+    ST('Lv7', '3連', {bpm:80, level:'7', rounds:'8', auto:false, showpat:false}),
+    ST('Lv8', '3連と16分の混在', {bpm:76, level:'8', rounds:'8', auto:false, showpat:false}),
+    ST('総仕上げ', 'Lv3からレベル自動・12ラウンド', {bpm:88, level:'3', rounds:'12', auto:true, showpat:false})
+  ],
+  j_swing:[
+    ST('ライドパターン', '3連のスウィング', {bpm:100, ratio:'67', pat:'ride', acc:'band', bars:'8'}),
+    ST('8分すべて', '3連のスウィング', {bpm:100, ratio:'67', pat:'all', acc:'band', bars:'8'}),
+    ST('裏の8分だけ', '3連のスウィング', {bpm:100, ratio:'67', pat:'up', acc:'band', bars:'8'}),
+    ST('ライドパターン', '伴奏はハイハットだけ', {bpm:120, ratio:'67', pat:'ride', acc:'hat', bars:'8'}),
+    ST('8分すべて', '深いスウィング（75%）', {bpm:100, ratio:'75', pat:'all', acc:'band', bars:'8'}),
+    ST('8分すべて', '速め・軽いスウィング', {bpm:160, ratio:'60', pat:'all', acc:'band', bars:'8'}),
+    ST('裏の8分だけ', '速め・ハイハットだけ', {bpm:180, ratio:'60', pat:'up', acc:'hat', bars:'8'}),
+    ST('8分すべて', 'イーブン（弾き分け）', {bpm:120, ratio:'50', pat:'all', acc:'band', bars:'8'})
+  ],
+  j_thin:[
+    ST('4拍目だけ まで', '8小節ずつ', {bpm:120, per:'8', last:'3', what:'q'}),
+    ST('4拍目だけ まで', '4小節ずつ', {bpm:120, per:'4', last:'3', what:'q'}),
+    ST('1小節に1回 まで', '4小節ずつ', {bpm:120, per:'4', last:'4', what:'q'}),
+    ST('2小節に1回 まで', '4小節ずつ', {bpm:120, per:'4', last:'5', what:'q'}),
+    ST('2・4拍だけ叩く', '2小節に1回 まで', {bpm:120, per:'4', last:'5', what:'24'}),
+    ST('遅いテンポ', '2小節に1回 まで', {bpm:80, per:'4', last:'5', what:'q'}),
+    ST('速いテンポ', '2小節に1回 まで', {bpm:200, per:'4', last:'5', what:'q'})
+  ],
+  j_feel:[
+    ST('オン・ザ・ビート', 'お手本とずっと一緒', {bpm:110, feel:'on', guide:'with', bars:'8', what:'q'}),
+    ST('レイドバック', 'お手本とずっと一緒', {bpm:110, feel:'l25', guide:'with', bars:'8', what:'q'}),
+    ST('レイドバック', '後半は自分だけ', {bpm:110, feel:'l25', guide:'fade', bars:'16', what:'q'}),
+    ST('オン ⇄ レイドバック', '後半は自分だけ', {bpm:110, feel:'alt', guide:'fade', bars:'16', what:'q'}),
+    ST('オン ⇄ レイドバック', 'お手本を聴いてから', {bpm:110, feel:'alt', guide:'intro', bars:'16', what:'q'}),
+    ST('オン ⇄ レイドバック', 'お手本なし', {bpm:110, feel:'alt', guide:'none', bars:'16', what:'q'}),
+    ST('深いレイドバック', '後半は自分だけ', {bpm:90, feel:'l40', guide:'fade', bars:'16', what:'q'}),
+    ST('前ノリ', '後半は自分だけ', {bpm:130, feel:'p20', guide:'fade', bars:'16', what:'q'}),
+    ST('オン ⇄ レイドバック', '2・4拍だけ・お手本なし', {bpm:90, feel:'alt', guide:'none', bars:'16', what:'24'})
+  ],
+  j_over:[
+    ST('3拍ごと', '1周・ゆっくり', {bpm:100, kind:'3', ratio:'60', cycles:'1'}),
+    ST('3拍ごと', '2周', {bpm:120, kind:'3', ratio:'60', cycles:'2'}),
+    ST('裏から始まる4分', '軽いスウィング', {bpm:110, kind:'u', ratio:'60', cycles:'2'}),
+    ST('裏から始まる4分', '3連のスウィング', {bpm:140, kind:'u', ratio:'67', cycles:'2'}),
+    ST('付点4分ごと', '2周', {bpm:100, kind:'d', ratio:'60', cycles:'2'}),
+    ST('2拍3連', '2周', {bpm:90, kind:'h', ratio:'60', cycles:'2'}),
+    ST('付点4分ごと', '4周', {bpm:120, kind:'d', ratio:'60', cycles:'4'}),
+    ST('2拍3連', '4周', {bpm:120, kind:'h', ratio:'60', cycles:'4'})
+  ]
+};
+
+const MODES = [
+{
+  id:'steady', steps:STEPS.steady, help:'クリックに合わせて、選んだ音価で叩きます。', name:'一定拍', title:'一定拍 ─ ずれ測定',
+  desc:'クリックに合わせて叩き、1打ごとのずれ（ms）を測ります。4分だけでなく、8分・3連・16分・裏拍で叩くと「裏だけ遅れる」などの癖が見えます。',
+  opts:[BPM_OPT(100),
+    {key:'value', label:'叩く音価', type:'select', def:'q', choices:Object.entries(VALUES).map(([k,v])=>[k,v.name])},
+    {key:'meter', label:'拍子', type:'select', def:'4', choices:[['4','4/4'],['3','3/4']]},
+    {key:'bars', label:'長さ', type:'select', def:'8', choices:[['4','4小節'],['8','8小節'],['16','16小節']]},
+    {key:'subclick', label:'細分のクリックも鳴らす', type:'check', def:false}],
+  build(o){
+    const spb = 60/o.bpm, B = +o.meter, bar = B*spb, bars = +o.bars, v = VALUES[o.value];
+    const p = Plan(o.bpm); p.rows = [{n:B}];
+    const hint = (o.value === 'bb' && B === 3) ? '2拍目と3拍目を叩く' : v.hint;
+    addBar(p, 0, B, spb);
+    p.segments.push({t:0, text:'カウント（聴くだけ）', sub:'次の小節から ' + v.name + ' で叩く'});
+    p.segments.push({t:bar, text:v.name, sub:hint});
+    for(let b=0;b<bars;b++){
+      const t0 = bar*(b+1); addBar(p, t0, B, spb);
+      for(let i=0;i<B;i++){
+        const bt = t0 + i*spb;
+        if(o.subclick && v.sub > 1) for(let k=1;k<v.sub;k++) p.events.push({t:bt + k*spb/v.sub, sound:'sub'});
+        let pos = v.pos;
+        if(o.value === 'bb') pos = (B===4 ? (i%2===1 ? [0] : []) : (i>0 ? [0] : []));
+        pos.forEach(f => p.targets.push({t:bt + f*spb, layer:0, win:winOf(v.gap, spb),
+          group: v.groups ? v.groups[v.pos.indexOf(f)] : null}));
+      }
+    }
+    p.dur = bar*(bars+1); p.label = `${v.name} ${o.bpm}BPM`;
+    return p;
+  }
+},
+{
+  id:'vanish', steps:STEPS.vanish, help:'ずっと4分音符で叩き続けます。クリックと拍の表示が消えても止めないでください。', name:'消えるメトロノーム', title:'消えるメトロノーム',
+  desc:'クリックが途中で消えます。無音のあいだも4分音符で叩き続け、クリックが戻ったときに合っているかを見ます。自分の中のテンポを保つ練習です（無音中は画面の拍表示も消えます）。',
+  opts:[BPM_OPT(96),
+    {key:'on', label:'クリックありの小節数', type:'select', def:'2', choices:[['1','1小節'],['2','2小節'],['4','4小節']]},
+    {key:'off', label:'無音の小節数', type:'select', def:'2', choices:[['1','1小節'],['2','2小節'],['4','4小節'],['8','8小節']]},
+    {key:'cycles', label:'くり返し', type:'select', def:'4', choices:[['3','3回'],['4','4回'],['6','6回']]},
+    {key:'grow', label:'回ごとに無音を倍にする（最大8小節）', type:'check', def:false}],
+  build(o){
+    const spb = 60/o.bpm, bar = 4*spb, p = Plan(o.bpm);
+    addBar(p, 0, 4, spb);
+    p.segments.push({t:0, text:'カウント（聴くだけ）', sub:'次の小節から4分音符で叩き続ける'});
+    let t = bar, block = 0;
+    const onBlock = (nb, last) => {
+      p.segments.push({t, text:'クリックあり', sub: last ? '最後：合っているか確認' : '合わせて叩く'});
+      for(let b=0;b<nb;b++){ addBar(p, t, 4, spb);
+        for(let i=0;i<4;i++) p.targets.push({t:t+i*spb, layer:0, win:winOf(1,spb), group:'クリックあり', block, kind:'on', first:b===0&&i===0});
+        t += bar; }
+      block++;
+    };
+    const offBlock = nb => {
+      p.segments.push({t, text:'無音', sub:'心の中で数えて叩き続ける', silent:true});
+      const s0 = t;
+      for(let b=0;b<nb;b++){ addBar(p, t, 4, spb, {sound:false, show:false});
+        for(let i=0;i<4;i++) p.targets.push({t:t+i*spb, layer:0, win:winOf(1,spb), group:'無音', block, kind:'off'});
+        t += bar; }
+      p.shade.push({t0:s0 - spb*0.5, t1:t - spb*0.5});
+      block++;
+    };
+    const cycles = +o.cycles;
+    for(let c=0;c<cycles;c++){
+      onBlock(+o.on, false);
+      offBlock(o.grow ? Math.min(8, (+o.off) * 2**c) : +o.off);
+    }
+    onBlock(2, true);
+    p.dur = t; p.label = `${o.on}+${o.off}小節${o.grow?'（倍増）':''} ${o.bpm}BPM`;
+    return p;
+  }
+},
+{
+  id:'ladder', steps:STEPS.ladder, help:'クリックは4分のまま。大きな文字の細分で叩きます。切り替え前の1小節はオレンジの「あと○拍」で予告し、切り替わる1拍目でベルが鳴ります。', name:'チェンジアップ', title:'チェンジアップ',
+  desc:'クリックは4分音符のまま、叩く細分が 4分→8分→3連→16分… と切り替わります。テンポを変えずに細分だけを切り替える、ドラムの基礎練習でおなじみのメニューです。切り替えの前にはカウントダウンが出ます。',
+  opts:[BPM_OPT(80),
+    {key:'seq', label:'順番', type:'select', def:'basic', choices:[['basic','4分→8分→3連→16分'],['full','4→8→3連→16→5連→16→3連→8→4'],['random','ランダム（8回切り替え）'],['random5','ランダム・5連6連あり']]},
+    {key:'per', label:'1段あたり', type:'select', def:'2', choices:[['1','1小節'],['2','2小節'],['4','4小節']]},
+    {key:'bell', label:'切り替わりの1拍目でベルを鳴らす', type:'check', def:true},
+    {key:'subclick', label:'細分のクリックも鳴らす', type:'check', def:false}],
+  build(o){
+    const N = {1:'4分',2:'8分',3:'3連',4:'16分',5:'5連',6:'6連'};
+    let seq;
+    if(o.seq === 'basic') seq = [1,2,3,4];
+    else if(o.seq === 'full') seq = [1,2,3,4,5,4,3,2,1];
+    else {
+      const pool = o.seq === 'random5' ? [1,2,3,4,5,6] : [1,2,3,4];
+      seq = [pool[Math.floor(Math.random()*pool.length)]];
+      while(seq.length < 9){ const n = pool[Math.floor(Math.random()*pool.length)]; if(n !== seq[seq.length-1]) seq.push(n); }
+    }
+    const spb = 60/o.bpm, bar = 4*spb, per = +o.per, p = Plan(o.bpm);
+    const COL = {1:'#3d4a8f', 2:'#2a9d6f', 3:'#c0392b', 4:'#8e44ad', 5:'#d35400', 6:'#16708a'};
+    addBar(p, 0, 4, spb);
+    for(let i=0;i<4;i++) p.segments.push({t:i*spb, text:'カウント（聴くだけ）', sub:`あと ${4-i} 拍で ${N[seq[0]]} 開始`, cls:'warn'});
+    let t = bar;
+    seq.forEach((n, si) => {
+      const next = seq[si+1];
+      p.segments.push({t, text:N[n], sub: next ? `この細分で ${per} 小節 → そのあと ${N[next]}` : `最後まで ${N[n]}`, color:COL[n], cls:'change'});
+      const s0 = t;
+      for(let b=0;b<per;b++){
+        addBar(p, t, 4, spb);
+        if(b === 0 && si > 0 && o.bell) p.events.push({t, sound:'bell'});
+        if(next && b === per-1) for(let i=0;i<4;i++)
+          p.segments.push({t:t + i*spb, text:N[n], sub:`あと ${4-i} 拍で ${N[next]} へ`, color:COL[n], cls:'warn'});
+        for(let i=0;i<4;i++){
+          const bt = t + i*spb;
+          for(let k=0;k<n;k++){
+            if(k>0 && o.subclick) p.events.push({t:bt + k*spb/n, sound:'sub'});
+            p.targets.push({t:bt + k*spb/n, layer:0, win:winOf(1/n, spb, 0.12), group:N[n]});
+          }
+        }
+        t += bar;
+      }
+      p.bands.push({t0:s0 - 0.04, t1:t - 0.04, label:N[n]});
+    });
+    p.dur = t; p.label = `${seq.map(n=>N[n]).join('→')} ${o.bpm}BPM`;
+    return p;
+  }
+},
+{
+  id:'poly', steps:STEPS.poly, help:'左手 <kbd>F</kbd>/<kbd>D</kbd> と右手 <kbd>J</kbd>/<kbd>K</kbd> で、それぞれの数を叩きます。', name:'ポリリズム', title:'ポリリズム',
+  desc:'左手（F・D キー）と右手（J・K キー）で別々の数を同じ1小節に叩きます。左右の音色が違うガイドを聴きながら合わせ、慣れたら後半のガイドを消してみてください。',
+  opts:[BPM_OPT(72),
+    {key:'ratio', label:'左 : 右', type:'select', def:'3:2', choices:[['3:2','3 : 2'],['2:3','2 : 3'],['4:3','4 : 3'],['3:4','3 : 4'],['5:4','5 : 4'],['5:3','5 : 3']]},
+    {key:'guide', label:'ガイド音', type:'select', def:'both', choices:[['both','左右とも鳴らす'],['A','左だけ鳴らす'],['B','右だけ鳴らす'],['down','1拍目だけ']]},
+    {key:'bars', label:'長さ', type:'select', def:'8', choices:[['4','4小節'],['8','8小節'],['16','16小節']]},
+    {key:'fade', label:'後半はガイドを1拍目だけにする', type:'check', def:true}],
+  bpmNote:'右手の1拍のテンポ',
+  build(o){
+    const [a, b] = o.ratio.split(':').map(Number);
+    const spb = 60/o.bpm, bar = b*spb, bars = +o.bars, p = Plan(o.bpm);
+    p.rows = [{n:a, label:'左'}, {n:b, label:'右'}];
+    p.layers = [{id:0, label:`左手 <kbd>F</kbd> <kbd>D</kbd>（${a}つ）`, key:'左'}, {id:1, label:`右手 <kbd>J</kbd> <kbd>K</kbd>（${b}つ）`, key:'右'}];
+    const layerBar = (t, guide, show, isTarget) => {
+      for(let i=0;i<a;i++){ const tt = t + i*bar/a;
+        if(guide==='both' || guide==='A' || (guide==='down' && i===0)) p.events.push({t:tt, sound:'A'});
+        p.vis.push({t:tt, row:0, idx:i, show});
+        if(isTarget) p.targets.push({t:tt, layer:0, win:winOf(b/a, spb), group:`左（${a}）`}); }
+      for(let i=0;i<b;i++){ const tt = t + i*spb;
+        if(guide==='both' || guide==='B' || (guide==='down' && i===0)) p.events.push({t:tt, sound:'B'});
+        p.vis.push({t:tt, row:1, idx:i, show});
+        if(isTarget) p.targets.push({t:tt, layer:1, win:winOf(1, spb), group:`右（${b}）`}); }
+    };
+    layerBar(0, 'both', true, false);
+    p.segments.push({t:0, text:'カウント（聴くだけ）', sub:`次の小節から 左${a}つ・右${b}つ で叩く`});
+    const half = o.fade ? Math.floor(bars/2) : bars;
+    for(let m=0;m<bars;m++){
+      const t = bar*(m+1);
+      const faded = m >= half;
+      if(m === 0) p.segments.push({t, text:`${a} 対 ${b}`, sub:'左右で叩く'});
+      if(o.fade && m === half) p.segments.push({t, text:'ガイド少なめ', sub:'1拍目だけ鳴ります'});
+      layerBar(t, faded ? 'down' : o.guide, !faded, true);
+      if(faded && m === half) p.shade.push({t0:t - spb*0.3, t1:bar*(bars+1)});
+    }
+    p.dur = bar*(bars+1); p.label = `${a}:${b} ${o.bpm}BPM`;
+    return p;
+  }
+},
+{
+  id:'echo', steps:STEPS.echo, help:'「聴く」の小節は叩かずに聴くだけ。「叩く」の小節で同じリズムを叩き返します。', name:'リズム模倣', title:'リズム模倣（聴いて叩き返す）',
+  desc:'1小節のリズムが「コッ」という音で鳴ります。次の小節で、クリックに合わせて同じリズムを叩き返してください。聴く小節では叩かずに聴くだけ。リズムを聴き取って再現する力の練習です。',
+  opts:[BPM_OPT(88),
+    {key:'level', label:'レベル', type:'select', def:'1', choices:ECHO_LEVELS.map((L,i) => [String(i+1), `${i+1}：${L.name}`]),
+      note: v => { const L = ECHO_LEVELS[(+v||1)-1]; return `${L.desc}<br>例：<span class="mono">${patText(L.ex)}</span>`; }},
+    {key:'rounds', label:'ラウンド数', type:'select', def:'8', choices:[['6','6ラウンド'],['8','8ラウンド'],['12','12ラウンド'],['16','16ラウンド']]},
+    {key:'auto', label:'レベルを自動で上げ下げする（2回続けて正解で↑、2回続けて失敗で↓）', type:'check', def:true},
+    {key:'showpat', label:'聴く小節でリズムを文字表示する', type:'check', def:false}],
+  build(o){
+    const startLv = Math.min(ECHO_LEVELS.length, +o.level || 1);
+    const spb = 60/o.bpm, bar = 4*spb, p = Plan(o.bpm), R = +o.rounds;
+    const st = {lv:startLv, streak:0, fails:0, next:0, judged:0, maxLv:startLv, used:new Set(), prev:'', auto:!!o.auto, startLv};
+    p.echo = st; p.rounds = [];
+    const gen = L => {
+      for(let tries=0; tries<400; tries++){
+        const cells = [0,1,2,3].map(() => L.cells[Math.floor(Math.random()*L.cells.length)]);
+        const n = cells.reduce((s,c)=>s+c.length, 0), key = JSON.stringify(cells);
+        if(n < 3 || n > 14 || key === st.prev || !L.ok(cells)) continue;
+        if(st.used.has(key) && tries < 300) continue;
+        st.prev = key; st.used.add(key); return cells;
+      }
+      return L.ex;
+    };
+    const cls = f => f === 0 ? '拍頭' : f === .5 ? '8分の裏' : (f === .25 || f === .75) ? '16分の裏' : '3連';
+    const makeRound = r => {
+      const L = ECHO_LEVELS[st.lv-1], cells = gen(L), txt = patText(cells);
+      const t = bar*(1 + 2*r);
+      const prevLv = r > 0 ? p.rounds[r-1].lv : st.lv;
+      const tag = st.auto ? `（Lv${st.lv}）` : '';
+      const note = st.auto && r > 0 ? (st.lv > prevLv ? `レベルアップ！ Lv${st.lv}：${L.name}　` : st.lv < prevLv ? `レベルを1つ下げました（Lv${st.lv}）　` : '') : '';
+      const ev = [];
+      p.segments.push({t, text:`聴く ${r+1}/${R}${tag}`, sub: note + (o.showpat ? txt : '叩かずに聴く'), listen:true, cls: note.startsWith('レベルアップ') ? 'warn' : ''});
+      for(let i=0;i<4;i++){ ev.push({t:t+i*spb, sound:'sub'}); p.vis.push({t:t+i*spb, row:0, idx:i, show:true}); }
+      cells.forEach((c,bi) => c.forEach(f => ev.push({t:t + (bi+f)*spb, sound:'pat'})));
+      const t2 = t + bar;
+      p.segments.push({t:t2, text:`叩く ${r+1}/${R}${tag}`, sub:'同じリズムを叩き返す'});
+      for(let i=0;i<4;i++){ ev.push({t:t2+i*spb, sound: i===0 ? 'accent' : 'beat'}); p.vis.push({t:t2+i*spb, row:0, idx:i, show:true}); }
+      cells.forEach((c,bi) => c.forEach(f => p.targets.push({t:t2 + (bi+f)*spb, layer:0, win:winOf(L.gap, spb, 0.12), group:cls(f), round:r, pos:bi+f})));
+      ev.sort((a,b) => a.t - b.t); p.events.push(...ev);
+      p.rounds.push({t0:t2, cells, txt, lv:st.lv});
+      p.shade.push({t0:t - spb*0.3, t1:t2 - spb*0.3});
+    };
+    addBar(p, 0, 4, spb);
+    p.segments.push({t:0, text:'カウント（聴くだけ）', sub:'次の小節でリズムが鳴ります。まず聴く'});
+    if(!st.auto){ for(let r=0;r<R;r++) makeRound(r); st.next = R; }
+    else {
+      makeRound(0); st.next = 1;
+      p.onTick = (sched, heard, sess) => {
+        while(st.judged < p.rounds.length){
+          const rd = p.rounds[st.judged];
+          if(heard < rd.t0 + bar + 0.15) break;
+          const T = p.targets.filter(x => x.round === st.judged);
+          const taps = sess.taps.filter(tp => tp.layer === 0 && tp.t >= rd.t0 - 0.12 && tp.t < rd.t0 + bar + 0.1);
+          const e = evaluate({targets:T}, taps);
+          rd.ok = e.res.every(x => x.d !== null && Math.abs(x.d) <= 70) && e.extras.length === 0;
+          if(rd.ok){ st.streak++; st.fails = 0; if(st.streak >= 2 && st.lv < ECHO_LEVELS.length){ st.lv++; st.streak = 0; } }
+          else { st.streak = 0; st.fails++; if(st.fails >= 2 && st.lv > 1){ st.lv--; st.fails = 0; } }
+          st.maxLv = Math.max(st.maxLv, st.lv);
+          st.judged++;
+        }
+        while(st.next < R && bar*(1 + 2*st.next) - sched < 0.5){ makeRound(st.next); st.next++; }
+      };
+    }
+    p.dur = bar*(1 + 2*R);
+    p.label = st.auto ? `Lv${startLv}から（自動） ${o.bpm}BPM` : `レベル${startLv} ${o.bpm}BPM`;
+    return p;
+  }
+},
+{
+  id:'tempo', name:'テンポ変化の聴き分け', title:'テンポ変化の聴き分け',
+  desc:'クリックが鳴り、途中から少しずつ速く（または遅く）なったり、変わらなかったりします。どれだったかを答えてください。正解が続くと変化が小さくなり、間違えると大きくなります。',
+  opts:[BPM_OPT(100)],
+  quiz:true
+}
+];
+
+/* ================= ジャズ編 ================= */
+const SWING_OPT = def => ({key:'ratio', label:'スウィング比（裏の8分の位置）', type:'select', def,
+  choices:[['50','イーブン（50%）'],['60','軽いスウィング（60%）'],['67','3連のスウィング（67%）'],['75','深いスウィング（75%）']],
+  note: v => `1拍の長さを100%としたとき、裏の8分が何%の位置に来るか。3連なら約67%。実際の演奏では、テンポが速いほどイーブンに近づきます。`});
+// one bar of jazz accompaniment: walking bass on every beat, hi-hat on 2 & 4
+function jazzBar(p, t, spb, o={}){
+  const {bass=true, hat=true, click=false, show=true, clicks=null} = o;
+  for(let i=0;i<4;i++){
+    const tt = t + i*spb;
+    if(bass) p.events.push({t:tt, sound:'bass', f:walk()});
+    if(hat && (i === 1 || i === 3)) p.events.push({t:tt, sound:'hat'});
+    if(click && (!clicks || clicks.includes(i))) p.events.push({t:tt, sound: i === 0 ? 'accent' : 'beat'});
+    if(!clicks || clicks.includes(i)) p.vis.push({t:tt, row:0, idx:i, show});
+  }
+}
+const ACC_OPT = {key:'acc', label:'伴奏', type:'select', def:'band', choices:[['band','ベース＋2・4拍のハイハット'],['hat','2・4拍のハイハットだけ'],['click','4分のクリック']]};
+const accOf = a => a === 'band' ? {bass:true, hat:true} : a === 'hat' ? {bass:false, hat:true} : {bass:false, hat:false, click:true};
+
+const SW_PATTERNS = {
+  all:  {name:'8分すべて', pos:[[0,0],[0,1],[1,0],[1,1],[2,0],[2,1],[3,0],[3,1]], hint:'タ・ンタ・ンタ…と、裏を後ろに寄せて'},
+  up:   {name:'裏の8分だけ', pos:[[0,1],[1,1],[2,1],[3,1]], hint:'拍の間の「ンタ」の「タ」だけ叩く'},
+  ride: {name:'ライドパターン', pos:[[0,0],[1,0],[1,1],[2,0],[3,0],[3,1]], hint:'チーン・チッキ・チーン・チッキ（2拍目と4拍目に裏が付く）'}
+};
+const COMP_PATS = [
+  {id:'charleston', name:'チャールストン', pos:[[0,0],[1,1]]},
+  {id:'rev', name:'逆チャールストン', pos:[[0,1],[2,0]]},
+  {id:'24', name:'2拍目と4拍目', pos:[[1,0],[3,0]]},
+  {id:'antic', name:'アンティシペーション（4&）', pos:[[3,1]]},
+  {id:'u24', name:'2&と4&', pos:[[1,1],[3,1]]},
+  {id:'c3', name:'1・2&・4', pos:[[0,0],[1,1],[3,0]]},
+  {id:'c4', name:'1&・3&', pos:[[0,1],[2,1]]},
+  {id:'c5', name:'2・3&', pos:[[1,0],[2,1]]}
+];
+const compTxt = pos => [0,1,2,3].map(bi => [0,1].map(u => pos.some(e => e[0] === bi && e[1] === u) ? `${bi+1}${u ? '&' : ''}` : '・').join(' ')).join(' ');
+const JAZZ_MODES = [
+{
+  id:'j_swing', steps:STEPS.j_swing, name:'スウィング・フィール', title:'スウィング・フィール',
+  help:'お手本の小節のあと、選んだリズムをスウィングで叩きます。裏の8分を「後ろ」に置くのがポイント。',
+  desc:'ジャズの8分音符は、裏が後ろにずれる「スウィング」で演奏します。選んだスウィング比どおりに叩けているか、自分が実際にどのくらいの比で叩いているかを測ります。最初の2小節はお手本（ライドシンバルの音）です。',
+  opts:[BPM_OPT(120), SWING_OPT('67'),
+    {key:'pat', label:'叩くリズム', type:'select', def:'ride', choices:Object.entries(SW_PATTERNS).map(([k,v]) => [k, v.name])},
+    ACC_OPT,
+    {key:'bars', label:'長さ', type:'select', def:'8', choices:[['4','4小節'],['8','8小節'],['16','16小節']]}],
+  build(o){
+    const spb = 60/o.bpm, bar = 4*spb, r = (+o.ratio)/100, P = SW_PATTERNS[o.pat], bars = +o.bars, p = Plan(o.bpm);
+    const acc = accOf(o.acc);
+    for(let b=0;b<2;b++){
+      jazzBar(p, b*bar, spb, acc);
+
+      P.pos.forEach(([bi,u]) => p.events.push({t:b*bar + (bi + (u ? r : 0))*spb, sound:'ride'}));
+    }
+    if(!acc.bass && !acc.click) for(let b=0;b<2;b++) for(let i=0;i<4;i++) if(i===0||i===2) p.events.push({t:b*bar+i*spb, sound:'sub'});
+    p.segments.push({t:0, text:'お手本（聴くだけ）', sub:`${P.name}・スウィング比 ${o.ratio}%　3小節目から叩く`});
+    p.segments.push({t:2*bar, text:P.name, sub:P.hint});
+    for(let b=0;b<bars;b++){
+      const t = (b+2)*bar; jazzBar(p, t, spb, acc);
+      P.pos.forEach(([bi,u]) => p.targets.push({t:t + (bi + (u ? r : 0))*spb, layer:0, win:Math.min(0.12, 0.42*Math.min(r, 1-r)*spb), group: u ? '裏（&）' : '表（拍頭）', beatT:t + bi*spb, up:!!u}));
+    }
+    p.dur = (bars+2)*bar; p.ratio = r; p.label = `${P.name} ${o.ratio}% ${o.bpm}BPM`;
+    return p;
+  }
+},
+{
+  id:'j_thin', steps:STEPS.j_thin, name:'クリックを減らす', title:'クリックを減らす（2・4拍 → 4拍目だけ → …）',
+  help:'ずっと4分音符で叩き続けます。クリックが段階的に減っていきます。',
+  desc:'クリックを4分全部 → 2拍目と4拍目 → 4拍目だけ → 1小節に1回 → 2小節に1回、と少しずつ減らします。ジャズでは2・4拍を「拍の重心」として感じるのが基本です。少ない手がかりでもテンポを保てるかを測ります。',
+  opts:[BPM_OPT(120),
+    {key:'per', label:'1段階あたり', type:'select', def:'4', choices:[['2','2小節'],['4','4小節'],['8','8小節']]},
+    {key:'last', label:'どこまで減らすか', type:'select', def:'5', choices:[['3','4拍目だけ まで'],['4','1小節に1回 まで'],['5','2小節に1回 まで']]},
+    {key:'what', label:'叩くもの', type:'select', def:'q', choices:[['q','4分音符（全部の拍）'],['24','2拍目と4拍目だけ']]}],
+  build(o){
+    const STAGES = [
+      {name:'4分すべて', clicks:[0,1,2,3]},
+      {name:'2拍目と4拍目', clicks:[1,3]},
+      {name:'4拍目だけ', clicks:[3]},
+      {name:'1小節に1回（2拍目）', clicks:[1]},
+      {name:'2小節に1回（2拍目）', clicks:[1], every:2}
+    ].slice(0, +o.last);
+    const spb = 60/o.bpm, bar = 4*spb, per = +o.per, p = Plan(o.bpm);
+    addBar(p, 0, 4, spb);
+    for(let i=0;i<4;i++) p.segments.push({t:i*spb, text:'カウント（聴くだけ）', sub:`あと ${4-i} 拍で開始（${o.what === 'q' ? '4分音符' : '2拍目と4拍目'}で叩く）`, cls:'warn'});
+    let t = bar;
+    STAGES.forEach((S, si) => {
+      const next = STAGES[si+1];
+      p.segments.push({t, text:S.name, sub: next ? `${per}小節 → 次は ${next.name}` : '最後まで続ける', cls:'change'});
+      const s0 = t;
+      for(let b=0;b<per;b++){
+        const sounding = !S.every || b % S.every === 0;
+        for(let i=0;i<4;i++){
+          const tt = t + i*spb, ck = sounding && S.clicks.includes(i);
+          if(ck) p.events.push({t:tt, sound: S.clicks.length === 4 && i === 0 ? 'accent' : (S.clicks.length === 4 ? 'beat' : 'hat')});
+          if(ck) p.events.push({t:tt, sound:'sub'});
+          p.vis.push({t:tt, row:0, idx:i, show:ck});
+          if(o.what === 'q' || i === 1 || i === 3) p.targets.push({t:tt, layer:0, win:winOf(o.what === 'q' ? 1 : 2, spb), group:S.name, stage:si});
+        }
+        if(next && b === per-1) for(let i=0;i<4;i++) p.segments.push({t:t + i*spb, text:S.name, sub:`あと ${4-i} 拍で「${next.name}」へ`, cls:'warn'});
+        t += bar;
+      }
+      p.bands.push({t0:s0 - 0.04, t1:t - 0.04, label:S.name.replace(/（.*）/, '')});
+    });
+    p.dur = t; p.label = `${STAGES[STAGES.length-1].name}まで ${o.bpm}BPM`;
+    return p;
+  }
+},
+{
+  id:'j_feel', steps:STEPS.j_feel, name:'ノリの位置', title:'ノリの位置（オン・ザ・ビート／レイドバック／前ノリ）',
+  help:'ベースの4分音符に対して、狙った位置で叩きます。高い「お手本」の音が鳴っているあいだは、それに重ねて叩きます。グラフの0は「狙った位置」です。',
+  desc:'同じテンポのままで、拍のどこに音を置くかを弾き分けます。オン・ザ・ビートは拍ちょうど、レイドバックは少し後ろ、前ノリは少し前。ベース（低い音）に対してわざと「ずらす」練習です。お手本（高い音）は狙いの位置で鳴ります。判定が正確になるよう、先に遅延補正をしておいてください。',
+  opts:[BPM_OPT(110),
+    {key:'feel', label:'狙う位置', type:'select', def:'alt', choices:[['on','オン・ザ・ビート（±0）'],['l25','レイドバック（＋25ms）'],['l40','深いレイドバック（＋40ms）'],['p20','前ノリ（−20ms）'],['alt','4小節ごとに オン ⇄ レイドバック（＋30ms）']]},
+    {key:'guide', label:'お手本', type:'select', def:'fade', choices:[['fade','前半はお手本と一緒、後半は自分だけ'],['with','ずっとお手本と一緒に叩く'],['intro','最初にお手本を聴いてから叩く'],['none','お手本なし']]},
+    {key:'bars', label:'長さ', type:'select', def:'16', choices:[['8','8小節'],['16','16小節']]},
+    {key:'what', label:'叩くもの', type:'select', def:'q', choices:[['q','4分音符'],['24','2拍目と4拍目']]}],
+  extra:{label:'聴き比べ（オン → レイドバック → 前ノリ 各2小節）', run:feelCompare},
+  build(o){
+    const F = {on:['オン・ザ・ビート',0], l25:['レイドバック',25], l40:['深いレイドバック',40], p20:['前ノリ',-20]};
+    const feelAt = b => o.feel === 'alt' ? (Math.floor(b/4) % 2 === 1 ? ['レイドバック',30] : ['オン・ザ・ビート',0]) : F[o.feel];
+    const sgn = off => (off > 0 ? '+' : off < 0 ? '−' : '±') + Math.abs(off) + 'ms';
+    const spb = 60/o.bpm, bar = 4*spb, bars = +o.bars, p = Plan(o.bpm);
+    const lead = (t, off) => { for(let i=0;i<4;i++) if(o.what === 'q' || i === 1 || i === 3) p.events.push({t:t + i*spb + off/1000, sound:'lead', f:leadNote()}); };
+    jazzBar(p, 0, spb, {bass:true, hat:true, click:true});
+    let T0 = bar;
+    if(o.guide === 'intro'){
+      const feels = o.feel === 'alt' ? [['オン・ザ・ビート',0],['レイドバック',30]] : [F[o.feel]];
+      p.segments.push({t:0, text:'カウント（聴くだけ）', sub:'まずお手本を聴きます'});
+      feels.forEach(([name, off]) => {
+        p.segments.push({t:T0, text:`お手本：${name}（${sgn(off)}）`, sub:'聴くだけ。低いベースと高いお手本の重なり方を聴く', listen:true});
+        for(let b=0;b<2;b++){ jazzBar(p, T0, spb); lead(T0, off); T0 += bar; }
+      });
+      p.shade.push({t0:bar - spb*0.3, t1:T0 - spb*0.3});
+      p.segments.push({t:T0 - spb, text:'次の小節から叩く', sub:'', cls:'warn'});
+    } else p.segments.push({t:0, text:'カウント（聴くだけ）', sub:'次の小節から叩く' + (o.guide === 'none' ? '' : '（高い音のお手本に重ねる）')});
+    const half = Math.floor(bars/2);
+    for(let b=0;b<bars;b++){
+      const t = T0 + b*bar, [name, off] = feelAt(b);
+      const guided = o.guide === 'with' || (o.guide === 'fade' && b < half);
+      const gtxt = guided ? '高い音のお手本に重ねて' : (o.guide === 'fade' ? 'お手本なし。自分だけで' : '');
+      const first = b === 0 || feelAt(b-1)[0] !== name || (o.guide === 'fade' && b === half);
+      if(first) p.segments.push({t, text:`${name}（${sgn(off)}）`, sub:[gtxt, off > 0 ? 'ベースより少し後ろに置く' : off < 0 ? 'ベースより少し前に置く' : 'ベースとぴったり重ねる'].filter(Boolean).join('・'), cls: b > 0 ? 'change' : ''});
+      const nb = b + 1 < bars ? feelAt(b+1)[0] : null;
+      if(nb && nb !== name) p.segments.push({t:t + 0*spb, text:`${name}（${sgn(off)}）`, sub:`次の小節から ${nb}`, cls:'warn'});
+      else if(o.guide === 'fade' && b === half - 1) p.segments.push({t, text:`${name}（${sgn(off)}）`, sub:'次の小節からお手本が消えます', cls:'warn'});
+      jazzBar(p, t, spb, {bass:true, hat:true});
+      if(guided) lead(t, off);
+      for(let i=0;i<4;i++) if(o.what === 'q' || i === 1 || i === 3)
+        p.targets.push({t:t + i*spb + off/1000, layer:0, win:Math.min(0.12, 0.4*spb), group:name + (o.guide === 'fade' || o.guide === 'with' ? (guided ? '・お手本あり' : '・自分だけ') : ''), feel:name, off, guided});
+      if(o.feel === 'alt' && Math.floor(b/4) % 2 === 1 && b % 4 === 0) p.shade.push({t0:t - spb*0.3, t1:T0 + Math.min(bars, b+4)*bar - spb*0.3});
+    }
+    if(o.guide === 'fade') p.bands.push({t0:T0 - 0.04, t1:T0 + half*bar - 0.04, label:'お手本あり'}, {t0:T0 + half*bar - 0.04, t1:T0 + bars*bar, label:'自分だけ'});
+    p.dur = T0 + bars*bar; p.label = `${o.feel === 'alt' ? 'オン⇄レイドバック' : F[o.feel][0]}・${{fade:'お手本→自分',with:'お手本と',intro:'お手本を聴いて',none:'お手本なし'}[o.guide]} ${o.bpm}BPM`;
+    return p;
+  }
+},
+{
+  id:'j_comp', name:'コンピングのリズム', title:'コンピングのリズム',
+  help:'お手本の小節で形を聴き、続く小節で同じリズムを叩きます。「&」は拍の裏（スウィングの位置）です。',
+  desc:'ピアノやギターが伴奏（コンピング）で使う定番のリズムを、スウィングの裏の位置で正確に叩く練習です。下のステップを1から順に進めてください。クリアすると結果画面から次のステップへ進めます。',
+  opts:[BPM_OPT(132), SWING_OPT('67'),
+    {key:'how', label:'練習のしかた', type:'select', def:'parts', choices:[['single','1つの形をじっくり'],['parts','分解して練習（1音ずつ → 全部）'],['mix','いろいろな形を順番に'],['combo2','複合パタン（2小節フレーズ）'],['combo4','複合パタン（4小節フレーズ）']],
+      note: v => ({single:'選んだ形を、お手本1小節＋自分で4小節。それをくり返します。', parts:'選んだ形を1音ずつに分けて（各：お手本1小節＋2小節）、最後に全部の音で4小節。', mix:'いろいろな形が1つずつ、お手本1小節＋2小節で順番に出ます。', combo2:'形を2つ組み合わせた2小節のフレーズ。お手本2小節＋自分で2回くり返し（4小節）。', combo4:'形を4つ組み合わせた4小節のフレーズ。お手本4小節＋自分で4小節。'})[v]},
+    {key:'pat', label:'形（じっくり・分解のとき）', type:'select', def:'charleston', choices:COMP_PATS.map(P => [P.id, P.name]),
+      note: v => { const P = COMP_PATS.find(x => x.id === v); return P ? `数え方：<span class="mono">${compTxt(P.pos)}</span>` : ''; }},
+    {key:'rounds', label:'くり返し・出題数', type:'select', def:'4', choices:[['2','2'],['4','4'],['6','6'],['8','8']]}],
+  steps:[
+    {title:'2拍目と4拍目', sub:'分解して', o:{bpm:120, ratio:'67', how:'parts', pat:'24', rounds:'2'}},
+    {title:'2拍目と4拍目', sub:'通して', o:{bpm:120, ratio:'67', how:'single', pat:'24', rounds:'2'}},
+    {title:'チャールストン', sub:'分解して', o:{bpm:120, ratio:'67', how:'parts', pat:'charleston', rounds:'2'}},
+    {title:'チャールストン', sub:'通して', o:{bpm:120, ratio:'67', how:'single', pat:'charleston', rounds:'2'}},
+    {title:'逆チャールストン', sub:'分解して', o:{bpm:120, ratio:'67', how:'parts', pat:'rev', rounds:'2'}},
+    {title:'逆チャールストン', sub:'通して', o:{bpm:120, ratio:'67', how:'single', pat:'rev', rounds:'2'}},
+    {title:'2&と4&', sub:'分解して', o:{bpm:120, ratio:'67', how:'parts', pat:'u24', rounds:'2'}},
+    {title:'アンティシペーション（4&）', sub:'通して', o:{bpm:120, ratio:'67', how:'single', pat:'antic', rounds:'2'}},
+    {title:'1・2&・4', sub:'分解して', o:{bpm:120, ratio:'67', how:'parts', pat:'c3', rounds:'2'}},
+    {title:'8つの形を順番に', sub:'いろいろ', o:{bpm:132, ratio:'67', how:'mix', pat:'charleston', rounds:'8'}},
+    {title:'2小節フレーズ', sub:'複合パタン', o:{bpm:132, ratio:'67', how:'combo2', pat:'charleston', rounds:'4'}},
+    {title:'4小節フレーズ', sub:'複合パタン', o:{bpm:140, ratio:'67', how:'combo4', pat:'charleston', rounds:'4'}},
+    {title:'4小節フレーズ・速め', sub:'160BPM・軽いスウィング', o:{bpm:160, ratio:'60', how:'combo4', pat:'charleston', rounds:'4'}}
+  ],
+  build(o){
+    const spb = 60/o.bpm, bar = 4*spb, r = (+o.ratio)/100, p = Plan(o.bpm), R = +o.rounds;
+    const tOf = (t, [bi,u]) => t + (bi + (u ? r : 0))*spb;
+    const pick = a => a[Math.floor(Math.random()*a.length)];
+    const sel = COMP_PATS.find(x => x.id === o.pat) || COMP_PATS[0];
+    jazzBar(p, 0, spb, {click:true, bass:true, hat:true});
+    p.segments.push({t:0, text:'カウント（聴くだけ）', sub:'次の小節でお手本が鳴ります'});
+    let t = bar;
+    // one exercise: phrase = array of bars (each = array of [beat, up]); demo once, then play `reps` times
+    const exercise = (title, phrase, reps, groupName) => {
+      const txt = phrase.map(compTxt).join(' ｜ ');
+      p.segments.push({t, text:`お手本：${title}`, sub:txt, listen:true});
+      const d0 = t;
+      phrase.forEach(pos => { jazzBar(p, t, spb); pos.forEach(e => p.events.push({t:tOf(t, e), sound:'comp', f:chordTones()})); t += bar; });
+      p.shade.push({t0:d0 - spb*0.3, t1:t - spb*0.3});
+      p.segments.push({t, text:`叩く：${title}`, sub:txt});
+      for(let k=0;k<reps;k++) phrase.forEach(pos => {
+        jazzBar(p, t, spb);
+        pos.forEach(e => p.targets.push({t:tOf(t, e), layer:0, win:Math.min(0.12, 0.45*spb), group: e[1] ? '裏（&）' : '表（拍頭）', pat:groupName || title}));
+        t += bar;
+      });
+    };
+    if(o.how === 'single'){
+      for(let k=0;k<R;k++) exercise(`${sel.name}（${k+1}/${R}）`, [sel.pos], 4, sel.name);
+    } else if(o.how === 'parts'){
+      const lab = ([bi,u]) => `${bi+1}${u ? '&' : ''}`;
+      if(sel.pos.length > 1) sel.pos.forEach(e => exercise(`${sel.name}：「${lab(e)}」だけ`, [[e]], 2));
+      for(let k=0;k<Math.max(1, Math.floor(R/2));k++) exercise(`${sel.name}：全部`, [sel.pos], 4, `${sel.name}：全部`);
+    } else if(o.how === 'mix'){
+      const order = ['charleston','24','rev','u24','antic','c3','c4','c5'];
+      for(let k=0;k<R;k++){ const P = COMP_PATS.find(x => x.id === order[k % order.length]); exercise(`${k+1}/${R}：${P.name}`, [P.pos], 2, P.name); }
+    } else {
+      const L = o.how === 'combo2' ? 2 : 4;
+      for(let k=0;k<R;k++){
+        let bars = [];
+        for(let tries=0; tries<50; tries++){
+        bars = [];
+        while(bars.length < L){
+          const P = pick(COMP_PATS), prev = bars[bars.length-1];
+          if(prev && prev.id === P.id) continue;
+          let pos = P.pos;
+          if(prev && prev.pos.some(([bi,u]) => bi === 3 && u)) pos = pos.filter(([bi,u]) => !(bi === 0 && !u)); // 4& で食ったら次の1拍目は弾かない
+          if(!pos.length) continue;
+          bars.push({id:P.id, name:P.name, pos});
+        }
+        const endsAntic = bars[L-1].pos.some(([bi,u]) => bi === 3 && u), startsOne = bars[0].pos.some(([bi,u]) => bi === 0 && !u);
+        if(!(endsAntic && startsOne)) break;   // くり返しのつなぎ目で 4& と 1 がぶつからないように
+        }
+        exercise(`フレーズ ${k+1}/${R}`, bars.map(b => b.pos), L === 2 ? 2 : 1, null);
+      }
+    }
+    p.dur = t; p.label = `${{single:'じっくり',parts:'分解',mix:'いろいろ',combo2:'複合2小節',combo4:'複合4小節'}[o.how]}${['single','parts'].includes(o.how) ? '：' + sel.name : ''} ${o.bpm}BPM`;
+    return p;
+  }
+},
+{
+  id:'j_over', steps:STEPS.j_over, name:'重ねリズム', title:'重ねリズム（3拍フレーズ・付点4分・裏の4分・2拍3連）',
+  help:'4拍子の伴奏の上に、拍子とずれた周期のリズムを叩きます。後半はガイド音が消えます。',
+  desc:'ジャズのソロやコンピングでよく使う、拍子とずれたまとまりのリズムです。3拍ごと（3 over 4）、付点4分ごと、裏から始まる4分（8分ずらし）、2拍3連。前半はガイド音（ライド）が鳴り、後半は自分だけで続けます。',
+  opts:[BPM_OPT(120),
+    {key:'kind', label:'リズム', type:'select', def:'3', choices:[['3','3拍ごと（3 over 4）'],['d','付点4分ごと'],['u','裏から始まる4分（8分ずらし）'],['h','2拍3連（4分3連）']]},
+    SWING_OPT('60'),
+    {key:'cycles', label:'長さ', type:'select', def:'2', choices:[['1','1周（3小節）'],['2','2周（6小節）'],['4','4周（12小節）']]}],
+  build(o){
+    const spb = 60/o.bpm, bar = 4*spb, r = (+o.ratio)/100, p = Plan(o.bpm);
+    const K = {
+      '3':{name:'3拍ごと', step:3, cyc:3, sub:'1・・2・・3・・…と3拍のまとまりで。3小節で1拍目に戻る'},
+      'd':{name:'付点4分ごと', step:1.5, cyc:3, sub:'8分3つ分ずつ。拍の頭と裏に交互に来る'},
+      'u':{name:'裏から始まる4分', step:1, cyc:1, off:true, sub:'すべての拍の「&」だけを叩く（スウィングの位置）'},
+      'h':{name:'2拍3連', step:2/3, cyc:1, sub:'2拍に3つ、均等に'}
+    }[o.kind];
+    const bars = K.cyc === 3 ? 3*(+o.cycles) : Math.max(4, 2*(+o.cycles));
+    const pos = beat => K.off ? beat + r : beat;
+    jazzBar(p, 0, spb, {click:true});
+    p.segments.push({t:0, text:'カウント（聴くだけ）', sub:'次の小節から ' + K.name});
+    const half = Math.ceil(bars/2);
+    p.segments.push({t:bar, text:K.name, sub:K.sub + '（ガイドあり）'});
+    p.segments.push({t:(half+1)*bar, text:K.name, sub:'ガイドなしで続ける', silent:false, cls:'change'});
+    for(let b=0;b<bars;b++) jazzBar(p, (b+1)*bar, spb);
+    const total = bars*4;
+    for(let x=0; x < total - 1e-6; x += K.step){
+      const tt = bar + pos(x)*spb, guide = x < half*4 - 1e-6;
+      if(guide) p.events.push({t:tt, sound:'ride'});
+      const onBeat = !K.off && Math.abs(x - Math.round(x)) < 1e-6;
+      p.targets.push({t:tt, layer:0, win:Math.min(0.12, 0.4*Math.min(K.step, 1)*spb), group: guide ? 'ガイドあり' : 'ガイドなし', onBeat});
+    }
+    p.shade.push({t0:(half+1)*bar - spb*0.3, t1:(bars+1)*bar});
+    p.dur = (bars+1)*bar; p.label = `${K.name} ${o.bpm}BPM`;
+    return p;
+  }
+}
+];
+let compareTimer = [];
+function feelCompare(btn){
+  ac(); newMaster(); compareTimer.forEach(clearTimeout); compareTimer = []; resetWalk();
+  const bpm = Math.max(30, Math.min(260, +($('#op_bpm') || {}).value || 110)), spb = 60/bpm, bar = 4*spb;
+  const out = $('#extraMsg');
+  const parts = [['オン・ザ・ビート（±0ms）',0],['レイドバック（+30ms）',30],['深いレイドバック（+45ms）',45],['前ノリ（−25ms）',-25]];
+  const t0 = ctx.currentTime + 0.2;
+  parts.forEach(([name, off], k) => {
+    for(let b=0;b<2;b++){
+      const tb = t0 + (k*2 + b)*bar;
+      for(let i=0;i<4;i++){ playSound(tb + i*spb, 'bass', walk()); if(i === 1 || i === 3) playSound(tb + i*spb, 'hat'); playSound(tb + i*spb + off/1000, 'lead', leadNote()); }
+    }
+    compareTimer.push(setTimeout(() => out.innerHTML = `いま：<b>${name}</b>（${k+1}/${parts.length}）`, (0.2 + k*2*bar)*1000));
+  });
+  compareTimer.push(setTimeout(() => out.textContent = '終わりました。もう一度聴くにはボタンを押してください。', (0.2 + parts.length*2*bar)*1000));
+}
+Object.assign(STEPS, {
+  c_rubato:[
+    ST('アーチ', '揺れ小・拍の表示あり', {bpm:80, curve:'arch', amt:'s', phrases:'2', dots:true}),
+    ST('アーチ', '揺れ中・拍の表示あり', {bpm:80, curve:'arch', amt:'m', phrases:'2', dots:true}),
+    ST('アーチ', '揺れ中・耳だけで', {bpm:80, curve:'arch', amt:'m', phrases:'2', dots:false}),
+    ST('リタルダンド', '耳だけで', {bpm:84, curve:'rit', amt:'m', phrases:'2', dots:false}),
+    ST('アッチェレランド', '耳だけで', {bpm:72, curve:'accel', amt:'m', phrases:'2', dots:false}),
+    ST('波', '耳だけで', {bpm:80, curve:'wave', amt:'m', phrases:'2', dots:false}),
+    ST('アーチ', '揺れ大', {bpm:76, curve:'arch', amt:'l', phrases:'2', dots:false}),
+    ST('予測できない揺れ', '揺れ中', {bpm:80, curve:'random', amt:'m', phrases:'2', dots:false}),
+    ST('予測できない揺れ', '揺れ大・長め', {bpm:72, curve:'random', amt:'l', phrases:'4', dots:false})
+  ],
+  c_dotted:[
+    ST('3連のリズム（2:1）', 'お手本と一緒', {bpm:72, ratio:'2', unit:'8', guide:'with', bars:'4'}),
+    ST('付点（3:1）', 'お手本と一緒', {bpm:72, ratio:'3', unit:'8', guide:'with', bars:'4'}),
+    ST('付点（3:1）', '後半は自分だけ', {bpm:72, ratio:'3', unit:'8', guide:'fade', bars:'8'}),
+    ST('3連 ⇄ 付点', '2小節ごとに交互', {bpm:72, ratio:'alt', unit:'8', guide:'fade', bars:'8'}),
+    ST('付点4分＋8分', '後半は自分だけ', {bpm:80, ratio:'3', unit:'4', guide:'fade', bars:'8'}),
+    ST('複付点（7:1）', '後半は自分だけ', {bpm:60, ratio:'7', unit:'4', guide:'fade', bars:'8'}),
+    ST('鋭い付点（5:1）', 'フランス風序曲', {bpm:60, ratio:'5', unit:'8', guide:'fade', bars:'8'}),
+    ST('3連 ⇄ 付点', 'お手本なし・速め', {bpm:92, ratio:'alt', unit:'8', guide:'none', bars:'8'})
+  ],
+  c_hemiola:[
+    ST('ヘミオラ', 'お手本とずっと一緒', {bpm:120, guide:'with', cycles:'3'}),
+    ST('ヘミオラ', '後半は自分だけ', {bpm:132, guide:'fade', cycles:'4'}),
+    ST('ヘミオラ', 'お手本なし', {bpm:132, guide:'none', cycles:'4'}),
+    ST('ヘミオラ', 'ゆっくり（間が長い）', {bpm:96, guide:'none', cycles:'4'}),
+    ST('ヘミオラ', '速め・長め', {bpm:168, guide:'none', cycles:'6'})
+  ],
+  c_meter:[
+    ST('5/8（2+3）', '8分クリックあり', {bpm:200, meter:'5a', click:'all', bars:'8'}),
+    ST('5/8（3+2）', '8分クリックあり', {bpm:200, meter:'5b', click:'all', bars:'8'}),
+    ST('5/8（2+3）', 'クリックは拍の頭だけ', {bpm:200, meter:'5a', click:'heads', bars:'8'}),
+    ST('7/8（2+2+3）', '8分クリックあり', {bpm:200, meter:'7a', click:'all', bars:'8'}),
+    ST('7/8（3+2+2）', '8分クリックあり', {bpm:200, meter:'7b', click:'all', bars:'8'}),
+    ST('7/8（2+2+3）', 'クリックは拍の頭だけ', {bpm:220, meter:'7a', click:'heads', bars:'8'}),
+    ST('9/8（2+2+2+3）', 'クリックは拍の頭だけ', {bpm:220, meter:'9', click:'heads', bars:'8'}),
+    ST('7/8（2+2+3）', 'クリックは小節の頭だけ', {bpm:220, meter:'7a', click:'down', bars:'8'}),
+    ST('変わる拍子', '8分クリックあり', {bpm:180, meter:'mix', click:'all', bars:'8'}),
+    ST('変わる拍子', 'クリックは拍の頭だけ', {bpm:200, meter:'mix', click:'heads', bars:'16'}),
+    ST('変わる拍子', 'クリックは小節の頭だけ', {bpm:220, meter:'mix', click:'down', bars:'16'})
+  ],
+  c_entry:[
+    ST('予備拍2つ', 'ふつうのテンポ', {tempo:'mid', prep:'2', entry:'down', rounds:'6'}),
+    ST('予備拍1つ', 'ふつうのテンポ', {tempo:'mid', prep:'1', entry:'down', rounds:'6'}),
+    ST('予備拍1つ', 'ゆっくり', {tempo:'slow', prep:'1', entry:'down', rounds:'6'}),
+    ST('予備拍1つ', '速め', {tempo:'fast', prep:'1', entry:'down', rounds:'6'}),
+    ST('予備拍1つ', '毎回ばらばら', {tempo:'rand', prep:'1', entry:'down', rounds:'8'}),
+    ST('アウフタクト', 'ふつうのテンポ', {tempo:'mid', prep:'2', entry:'pick', rounds:'6'}),
+    ST('アウフタクト', '毎回ばらばら', {tempo:'rand', prep:'2', entry:'pick', rounds:'8'})
+  ]
+});
+
+/* ================= クラシック編 ================= */
+// ピアノ風の音（倍音を重ねて減衰させる）
+function piano(t, m, g){
+  const f = midiF(m), dur = 1.8 - Math.min(1, Math.max(0, (m - 36)/48))*1.0;
+  const out = ctx.createGain();
+  out.gain.setValueAtTime(0.0001, t); out.gain.linearRampToValueAtTime(g, t + 0.004);
+  out.gain.exponentialRampToValueAtTime(g*0.35, t + 0.15); out.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  const lp = ctx.createBiquadFilter(); lp.type = 'lowpass';
+  lp.frequency.setValueAtTime(Math.min(9000, f*9), t); lp.frequency.exponentialRampToValueAtTime(Math.max(400, f*2.5), t + dur*0.6);
+  [[1,1],[2,.5],[3,.25],[4,.13],[5,.07],[6,.04]].forEach(([h,a]) => {
+    const o = ctx.createOscillator(), ga = ctx.createGain(); o.type = 'sine';
+    o.frequency.value = f*h*(1 + 0.0003*h*h); ga.gain.value = a;
+    o.connect(ga).connect(lp); o.start(t); o.stop(t + dur + 0.05);
+  });
+  lp.connect(out).connect(master);
+}
+// 和声進行（ハ長調）
+const CPROG = [[36,[64,67,72]],[41,[65,69,72]],[43,[62,67,71]],[36,[64,67,72]],[45,[64,69,72]],[38,[65,69,74]],[43,[62,65,71]],[36,[64,67,72]]];
+let cIdx = 0;
+const cReset = () => { cIdx = 0; };
+const cNext = () => CPROG[(cIdx++) % CPROG.length];
+let curCls = CPROG[0];
+// 1小節分のピアノ伴奏（times = その小節の拍の時刻）
+function pianoBar(p, times, o={}){
+  const {show=true, row=0, chords=true} = o;
+  curCls = cNext(); const [b, ch] = curCls;
+  times.forEach((t, i) => {
+    if(i === 0){ p.events.push({t, sound:'pnoB', f:b}); if(chords) p.events.push({t, sound:'pno', f:ch}); }
+    else if(chords) p.events.push({t, sound:'pnoS', f:ch});
+    p.vis.push({t, row, idx:i, show});
+  });
+}
+const melNote = k => { const sc = [72,74,76,77,79,77,76,74]; return sc[k % sc.length]; };
+
+const CLASSIC_MODES = [
+{
+  id:'c_rubato', steps:STEPS.c_rubato, name:'ルバート', title:'ルバート（揺れるテンポに付いていく）',
+  help:'ピアノ伴奏の拍に合わせて、4分音符で叩き続けます。伴奏はテンポが揺れるので、よく聴いて付いていきます。',
+  desc:'ピアノ伴奏のテンポが、フレーズの中で速くなったり遅くなったりします。その揺れを聴き取って、拍に付いていく練習です。結果では「速くなるところ」と「遅くなるところ」で、どちらにずれやすいかが分かります。',
+  opts:[BPM_OPT(80),
+    {key:'curve', label:'テンポの揺れ方', type:'select', def:'arch', choices:[['arch','アーチ（中ほどで前へ、終わりで落ち着く）'],['rit','リタルダンド（終わりで遅くなる）'],['accel','アッチェレランド（だんだん速く）'],['wave','波（速く→遅く）'],['random','予測できない揺れ']]},
+    {key:'amt', label:'揺れの大きさ', type:'select', def:'m', choices:[['s','小さい（±6%）'],['m','中くらい（±12%）'],['l','大きい（±20%）']]},
+    {key:'phrases', label:'長さ', type:'select', def:'2', choices:[['2','2フレーズ（8小節）'],['4','4フレーズ（16小節）']]},
+    {key:'dots', label:'拍の表示を出す（目でも追える）', type:'check', def:false}],
+  build(o){
+    const a = {s:.06, m:.12, l:.2}[o.amt], base = o.bpm, p = Plan(base), N = 16, P = +o.phrases;
+    cReset();
+    const spb0 = 60/base;
+    pianoBar(p, [0,1,2,3].map(i => i*spb0));
+    p.segments.push({t:0, text:'カウント（聴くだけ）', sub:'次の小節から、伴奏の拍に合わせて叩く'});
+    let t = 4*spb0;
+    const curve = () => {
+      if(o.curve === 'random'){
+        const knots = Array.from({length:6}, () => 1 - a + 2*a*Math.random());
+        return Array.from({length:N}, (_, i) => { const u = i/4, k = Math.floor(u), f = u - k, w = (1 - Math.cos(Math.PI*f))/2; return knots[k]*(1 - w) + knots[k+1]*w; });
+      }
+      return Array.from({length:N}, (_, i) => { const x = i/(N-1);
+        return o.curve === 'arch' ? (1 - a) + 2*a*Math.sin(Math.PI*x)
+             : o.curve === 'rit' ? 1 + a*0.3 - 2*a*Math.max(0, (x - .5)/.5)**2
+             : o.curve === 'accel' ? (1 - a) + 2*a*Math.pow(x, 1.5)
+             : 1 + a*Math.sin(2*Math.PI*x); });
+    };
+    for(let ph=0; ph<P; ph++){
+      const fs = curve(), times = [];
+      for(let i=0;i<N;i++){ times.push(t); t += 60/(base*fs[i]); }
+      p.segments.push({t:times[0], text:`フレーズ ${ph+1}/${P}`, sub: o.curve === 'random' ? '予測できない揺れ。よく聴いて付いていく' : '伴奏をよく聴いて、揺れに付いていく', cls: ph > 0 ? 'change' : ''});
+      for(let k=0;k<4;k++) pianoBar(p, times.slice(4*k, 4*k + 4), {show:!!o.dots});
+      times.forEach((tt, i) => {
+        const iv = i < N-1 ? times[i+1] - tt : 60/(base*fs[i]);
+        const d = (fs[Math.min(N-1, i+1)] - fs[Math.max(0, i-1)]);
+        p.targets.push({t:tt, layer:0, win:Math.min(0.15, 0.4*iv), group: d > 0.012 ? '速くなるところ' : d < -0.012 ? '遅くなるところ' : 'ほぼ一定'});
+      });
+    }
+    p.dur = t + 0.3;
+    p.label = `${{arch:'アーチ',rit:'リタルダンド',accel:'アッチェレランド',wave:'波',random:'予測できない揺れ'}[o.curve]}・${{s:'小',m:'中',l:'大'}[o.amt]} ${base}BPM`;
+    return p;
+  }
+},
+{
+  id:'c_dotted', steps:STEPS.c_dotted, name:'付点・複付点', title:'付点・複付点（3連・付点・複付点の弾き分け）',
+  help:'長い音と短い音の組を叩きます。短い音をどこに置くかがポイント。最初の2小節はお手本です。',
+  desc:'付点のリズムは、短い音の置き場所で性格が変わります。3連（2:1）、付点（3:1）、複付点（7:1）、フランス風序曲の鋭い付点（約5:1）を弾き分けます。結果に、あなたが実際に叩いた比（例：3.4 : 1）が出ます。',
+  opts:[BPM_OPT(72),
+    {key:'ratio', label:'長さの比', type:'select', def:'3', choices:[['2','3連のリズム（2 : 1）'],['3','付点（3 : 1）'],['5','フランス風序曲の鋭い付点（約 5 : 1）'],['7','複付点（7 : 1）'],['alt','3連 ⇄ 付点を2小節ごとに交互']]},
+    {key:'unit', label:'単位', type:'select', def:'8', choices:[['8','付点8分＋16分（1拍に1組）'],['4','付点4分＋8分（2拍で1組）']]},
+    {key:'guide', label:'お手本（メロディ）', type:'select', def:'fade', choices:[['fade','前半はお手本と一緒、後半は自分だけ'],['with','ずっとお手本と一緒'],['none','最初の2小節だけ']]},
+    {key:'bars', label:'長さ', type:'select', def:'8', choices:[['4','4小節'],['8','8小節'],['16','16小節']]}],
+  build(o){
+    const spb = 60/o.bpm, bar = 4*spb, ub = o.unit === '8' ? 1 : 2, U = ub*spb, p = Plan(o.bpm), bars = +o.bars;
+    const ratioAt = b => o.ratio === 'alt' ? (Math.floor(b/2) % 2 ? 3 : 2) : +o.ratio;
+    const NAME = {2:'3連のリズム（2:1）', 3:'付点（3:1）', 5:'鋭い付点（5:1）', 7:'複付点（7:1）'};
+    cReset(); let k = 0;
+    pianoBar(p, [0,1,2,3].map(i => i*spb));
+    p.segments.push({t:0, text:'カウント（聴くだけ）', sub:'次の2小節はお手本'});
+    const mel = (t0, R) => { const s = R/(R+1); for(let u=0; u<4/ub; u++){ p.events.push({t:t0 + u*U, sound:'mel', f:melNote(k++)}); p.events.push({t:t0 + u*U + s*U, sound:'mel', f:melNote(k++)}); } };
+    let t = bar;
+    for(let d=0; d<2; d++){ const R = ratioAt(0); pianoBar(p, [0,1,2,3].map(i => t + i*spb)); mel(t, R);
+      if(d === 0) p.segments.push({t, text:`お手本：${NAME[R]}`, sub:'聴くだけ。短い音の位置を聴く', listen:true}); t += bar; }
+    p.shade.push({t0:bar - spb*0.3, t1:t - spb*0.3});
+    const half = Math.floor(bars/2);
+    for(let b=0; b<bars; b++){
+      const R = ratioAt(b), s = R/(R+1), guided = o.guide === 'with' || (o.guide === 'fade' && b < half);
+      if(b === 0 || ratioAt(b-1) !== R || (o.guide === 'fade' && b === half))
+        p.segments.push({t, text:NAME[R], sub: (guided ? 'お手本に重ねて' : '自分だけで') + '・長い音と短い音を叩く', cls: b > 0 ? 'change' : ''});
+      pianoBar(p, [0,1,2,3].map(i => t + i*spb));
+      if(guided) mel(t, R);
+      for(let u=0; u<4/ub; u++){
+        const t0 = t + u*U, w = Math.min(0.12, 0.45*(1 - s)*U);
+        p.targets.push({t:t0, layer:0, win:w, group:'長い音'});
+        p.targets.push({t:t0 + s*U, layer:0, win:w, group:'短い音', unitT:t0, U, s, R});
+      }
+      t += bar;
+    }
+    p.dur = t; p.label = `${o.ratio === 'alt' ? '3連⇄付点' : NAME[+o.ratio]}・${o.unit === '8' ? '付点8分' : '付点4分'} ${o.bpm}BPM`;
+    return p;
+  }
+},
+{
+  id:'c_hemiola', steps:STEPS.c_hemiola, name:'ヘミオラ', title:'ヘミオラ（3拍子の中の2拍のまとまり）',
+  help:'ふつうの小節は1拍目だけ。ヘミオラの2小節は「1・3・(次の小節の)2」と、2拍ずつのまとまりの頭を叩きます。',
+  desc:'3拍子の2小節を、2拍ずつ3つのまとまり（大きな3拍子）として感じるのがヘミオラです。バロックの舞曲や、ブラームスなどでカデンツの前によく出てきます。ふつうの3拍子の小節とヘミオラの小節が交互に来ます。',
+  opts:[BPM_OPT(132),
+    {key:'guide', label:'お手本', type:'select', def:'fade', choices:[['with','ずっとお手本と一緒'],['fade','前半はお手本と一緒、後半は自分だけ'],['none','お手本なし']]},
+    {key:'cycles', label:'くり返し', type:'select', def:'4', choices:[['3','3回（12小節）'],['4','4回（16小節）'],['6','6回（24小節）']]}],
+  build(o){
+    const spb = 60/o.bpm, bar = 3*spb, p = Plan(o.bpm), C = +o.cycles; p.rows = [{n:3}];
+    cReset();
+    pianoBar(p, [0,1,2].map(i => i*spb));
+    p.segments.push({t:0, text:'カウント（聴くだけ）', sub:'3拍子。次の小節から1拍目を叩く'});
+    let t = bar, k = 0;
+    const half = Math.ceil(C/2);
+    for(let c=0; c<C; c++){
+      const guided = o.guide === 'with' || (o.guide === 'fade' && c < half);
+      const tap = (tt, g) => { p.targets.push({t:tt, layer:0, win:Math.min(0.15, 0.4*spb), group:g}); if(guided) p.events.push({t:tt, sound:'mel', f:melNote(k++)}); };
+      for(let b=0; b<2; b++){
+        if(b === 0) p.segments.push({t, text:'3拍子', sub:(guided ? 'お手本と一緒に・' : '') + '1拍目だけ叩く', cls: c > 0 ? 'change' : ''});
+        if(b === 1) p.segments.push({t:t + 2*spb, text:'3拍子', sub:'あと1拍でヘミオラ', cls:'warn'});
+        pianoBar(p, [0,1,2].map(i => t + i*spb)); tap(t, '3拍子の小節'); t += bar;
+      }
+      p.segments.push({t, text:'ヘミオラ', sub:'2拍ずつ：1・3・(次の小節の)2', cls:'change'});
+      p.shade.push({t0:t - spb*0.3, t1:t + 2*bar - spb*0.3});
+      pianoBar(p, [0,1,2].map(i => t + i*spb)); tap(t, 'ヘミオラ'); tap(t + 2*spb, 'ヘミオラ'); t += bar;
+      pianoBar(p, [0,1,2].map(i => t + i*spb)); tap(t + spb, 'ヘミオラ'); t += bar;
+    }
+    pianoBar(p, [0,1,2].map(i => t + i*spb)); p.targets.push({t, layer:0, win:Math.min(0.15, 0.4*spb), group:'3拍子の小節'}); t += bar;
+    p.dur = t; p.shadeLabel = 'ヘミオラの小節'; p.label = `${{with:'お手本と',fade:'お手本→自分',none:'お手本なし'}[o.guide]} ${o.bpm}BPM`;
+    return p;
+  }
+},
+{
+  id:'c_meter', steps:STEPS.c_meter, name:'変拍子', title:'変拍子（5/8・7/8・9/8・変わる拍子）',
+  help:'長さの違う拍（8分2つ分と3つ分）の頭を叩きます。長い拍を短く詰めないのがポイント。',
+  desc:'5/8や7/8のように、8分音符2つ分の拍と3つ分の拍が混ざる拍子です（バルトーク、ストラヴィンスキー、東欧の民俗音楽など）。小節ごとに拍子が変わる設定もあります。テンポは8分音符の速さです。',
+  opts:[{key:'bpm', label:'テンポ（8分音符のBPM）', type:'bpm', def:200},
+    {key:'meter', label:'拍子', type:'select', def:'7a', choices:[['5a','5/8（2+3）'],['5b','5/8（3+2）'],['7a','7/8（2+2+3）'],['7b','7/8（3+2+2）'],['9','9/8（2+2+2+3）'],['mix','小節ごとに変わる拍子']]},
+    {key:'click', label:'クリック', type:'select', def:'all', choices:[['all','8分すべて（拍の頭を強く）'],['heads','拍の頭だけ'],['down','小節の頭だけ']]},
+    {key:'bars', label:'長さ', type:'select', def:'8', choices:[['8','8小節'],['16','16小節']]}],
+  build(o){
+    const e = 60/o.bpm, p = Plan(o.bpm), bars = +o.bars;
+    const FIX = {'5a':[2,3], '5b':[3,2], '7a':[2,2,3], '7b':[3,2,2], '9':[2,2,2,3]};
+    const MIX = [[2,3],[3,2],[2,2,3],[3,2,2],[2,2],[3,3],[2,2,2],[3]];
+    const seq = [];
+    for(let b=0; b<bars+1; b++){
+      if(o.meter !== 'mix') seq.push(FIX[o.meter]);
+      else { let m; do { m = MIX[Math.floor(Math.random()*MIX.length)]; } while(seq.length && JSON.stringify(m) === JSON.stringify(seq[seq.length-1])); seq.push(m); }
+    }
+    const lab = g => `${g.reduce((a,b)=>a+b,0)}/8（${g.join('+')}）`;
+    p.rows = [{n:Math.max(...seq.map(g => g.length))}];
+    let t = 0, prevLast = null;
+    seq.forEach((g, b) => {
+      const isCount = b === 0;
+      if(isCount) p.segments.push({t, text:'カウント（聴くだけ）', sub:`${lab(g)}　次の小節から拍の頭を叩く`});
+      else if(o.meter === 'mix') p.segments.push({t, text:lab(g), sub: b < bars ? '次：' + lab(seq[b+1]) : '最後の小節', cls:'change'});
+      else if(b === 1) p.segments.push({t, text:lab(g), sub:'拍の頭を叩く（' + g.map(x => x === 2 ? 'タ・ン' : 'タ・ン・ン').join(' ／ ') + '）'});
+      let x = 0;
+      g.forEach((len, j) => {
+        for(let q=0; q<len; q++){
+          const tt = t + (x + q)*e, head = q === 0, down = head && j === 0;
+          const snd = down ? 'accent' : head ? (o.click === 'down' ? null : 'beat') : (o.click === 'all' ? 'sub' : null);
+          if(snd || isCount) p.events.push({t:tt, sound: snd || (head ? 'beat' : 'sub')});
+        }
+        p.vis.push({t:t + x*e, row:0, idx:j, show: isCount || o.click !== 'down'});
+        if(!isCount){
+          const prev = j > 0 ? g[j-1] : prevLast;
+          p.targets.push({t:t + x*e, layer:0, win:Math.min(0.12, 0.45*2*e), group: prev === 3 ? '長い拍（8分3つ）のあと' : prev === 2 ? '短い拍（8分2つ）のあと' : '最初の拍'});
+        }
+        x += len;
+      });
+      prevLast = g[g.length-1];
+      t += x*e;
+    });
+    p.dur = t; p.label = `${o.meter === 'mix' ? '変わる拍子' : lab(FIX[o.meter])}・${{all:'8分クリック',heads:'頭だけ',down:'小節頭だけ'}[o.click]} 8分=${o.bpm}`;
+    return p;
+  }
+},
+{
+  id:'c_entry', steps:STEPS.c_entry, name:'入り（指揮）', title:'入り（指揮を見て、予備拍から入る）',
+  help:'音のカウントはありません。画面の指揮（青い玉）の動きを見て、1拍目（またはアウフタクト）で入ります。',
+  desc:'オーケストラや室内楽では、指揮者や相手の「予備拍」の動きだけを見て、最初の音を合わせます。毎回テンポが変わるので、予備拍の動きの速さからテンポを読み取ってください。玉が一番下に来た瞬間が拍です。',
+  opts:[{key:'tempo', label:'テンポ', type:'select', def:'mid', choices:[['slow','ゆっくり（54〜66）'],['mid','ふつう（72〜96）'],['fast','速め（108〜132）'],['rand','毎回ばらばら（50〜140）']]},
+    {key:'prep', label:'予備拍', type:'select', def:'2', choices:[['1','1拍'],['2','2拍']]},
+    {key:'entry', label:'入り方', type:'select', def:'down', choices:[['down','1拍目からみんなで入る'],['pick','アウフタクト（最後の予備拍で自分だけ先に入る）']]},
+    {key:'rounds', label:'回数', type:'select', def:'6', choices:[['4','4回'],['6','6回'],['8','8回']]}],
+  build(o){
+    const RG = {slow:[54,66], mid:[72,96], fast:[108,132], rand:[50,140]}[o.tempo];
+    const prep = o.entry === 'pick' ? Math.max(2, +o.prep) : +o.prep, R = +o.rounds;
+    const p = Plan(0); p.arcs = []; cReset();
+    let t = 0.3;
+    for(let r=0; r<R; r++){
+      const bpm = Math.round(RG[0] + Math.random()*(RG[1] - RG[0])), spb = 60/bpm;
+      p.segments.push({t, text:`${r+1}/${R}　指揮を見て`, sub: o.entry === 'pick' ? '最後の予備拍で自分だけ入り、1拍目でみんなと合わせる' : `予備拍${prep}つを見て、1拍目でみんなと一緒に入る`});
+      const start = t + 1.4, down = start + prep*spb;
+      for(let k=0; k<prep; k++) p.arcs.push([start + k*spb, start + (k+1)*spb]);
+      for(let k=0; k<3; k++) p.arcs.push([down + k*spb, down + (k+1)*spb]);
+      if(o.entry === 'pick') p.targets.push({t:down - spb, layer:0, win:0.2, group:'アウフタクト（自分だけ）', bpm});
+      pianoBar(p, [0,1,2,3].map(i => down + i*spb));
+      p.targets.push({t:down, layer:0, win:0.2, group:'入り（1拍目）', bpm});
+      for(let i=1;i<4;i++) p.targets.push({t:down + i*spb, layer:0, win:Math.min(0.15, 0.4*spb), group:'入ったあと', bpm});
+      p.segments.push({t:down + 3.5*spb, text:`${r+1}/${R}`, sub:`テンポは ${bpm} でした`});
+      t = down + 4*spb + 0.5;
+    }
+    p.dur = t; p.bpm = 90;
+    p.label = `${{slow:'ゆっくり',mid:'ふつう',fast:'速め',rand:'ばらばら'}[o.tempo]}・予備拍${prep}・${o.entry === 'pick' ? 'アウフタクト' : '1拍目'}`;
+    return p;
+  }
+}
+];
+
+
+/* ================= ポップス・ロック・ファンク・ラテン編 ================= */
+function kick(t, g){
+  const o = ctx.createOscillator(), ga = ctx.createGain(); o.type = 'sine';
+  o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(48, t + 0.09);
+  ga.gain.setValueAtTime(0.0001, t); ga.gain.linearRampToValueAtTime(g, t + 0.003); ga.gain.exponentialRampToValueAtTime(0.0001, t + 0.38);
+  o.connect(ga).connect(master); o.start(t); o.stop(t + 0.4);
+  ring(t, 3000, 1.5, 0.6*g, 0.012, 0.002);
+}
+function snare(t, g){
+  const n = ctx.createBufferSource(); n.buffer = noiseBuf;
+  const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2200; bp.Q.value = 0.7;
+  const ga = ctx.createGain(); ga.gain.setValueAtTime(0.0001, t); ga.gain.linearRampToValueAtTime(0.9*g, t + 0.002); ga.gain.exponentialRampToValueAtTime(0.0001, t + 0.17);
+  n.connect(bp).connect(ga).connect(master); n.start(t, Math.random()*0.5); n.stop(t + 0.2);
+  tone(t, 185, 'triangle', 0.6*g, 0.09, 1.25);
+}
+function conga(t, f, slap){
+  tone(t, f, 'sine', 0.55, slap ? 0.12 : 0.24, 1.35);
+  ring(t, slap ? 2600 : 1200, slap ? 3 : 6, slap ? 3 : 1.2, slap ? 0.05 : 0.03, 0.004);
+}
+// 1小節のドラム／パーカッション（拍 = 4つ）
+const GROOVES = {
+  rock8:  {hat:[[0,'hat'],[.5,'hat']], kick:[0,2,2.5], snare:[1,3]},
+  pop16:  {hat:[[0,'hat'],[.25,'hat16'],[.5,'hat'],[.75,'hat16']], kick:[0,2,2.5], snare:[1,3]},
+  funk:   {hat:[[0,'hat'],[.25,'hat16'],[.5,'hat'],[.75,'hat16']], kick:[0,.75,2.5], snare:[1,3], ghost:[1.75,2.25,3.75]},
+  half:   {hat:[[0,'hat'],[.5,'hat']], kick:[0,2.75], snare:[2]},
+  double: {hat:[[0,'hat'],[.25,'hat16'],[.5,'hat'],[.75,'hat16']], kick:[0,1,2,3], snare:[.5,1.5,2.5,3.5]},
+  shuffle:{hat:'swing', kick:[0,2], snare:[1,3]},
+  latin:  {shk:true, conga:[[1,'slap'],[3,'open'],[3.5,'open']], kick:[0]},
+  b68:    {shk68:true}
+};
+function groove(p, t, spb, style, o={}){
+  const G = GROOVES[style], {kickOn=true, snareOn=true, r=2/3, show=true, hatOn=true} = o;
+  for(let i=0;i<4;i++){
+    const bt = t + i*spb;
+    if(hatOn){
+      if(G.hat === 'swing'){ p.events.push({t:bt, sound:'hat'}); p.events.push({t:bt + r*spb, sound:'hat16'}); }
+      else if(G.hat) G.hat.forEach(([f, s]) => p.events.push({t:bt + f*spb, sound:s}));
+      if(G.shk) [0, .5].forEach(f => p.events.push({t:bt + f*spb, sound:'shk'}));
+      if(G.shk68) [0, 1/3, 2/3].forEach(f => p.events.push({t:bt + f*spb, sound:'shk'}));
+    }
+    p.vis.push({t:bt, row:0, idx:i, show});
+  }
+  if(kickOn && G.kick) G.kick.forEach(f => p.events.push({t:t + f*spb, sound:'kick'}));
+  if(snareOn && G.snare) G.snare.forEach(f => p.events.push({t:t + f*spb, sound:'snare'}));
+  if(snareOn && G.ghost) G.ghost.forEach(f => p.events.push({t:t + f*spb, sound:'ghost'}));
+  if(G.conga) G.conga.forEach(([f, k]) => p.events.push({t:t + f*spb, sound: k === 'slap' ? 'congaS' : 'congaO'}));
+  if(G.shk68){ [0, 2].forEach(i => p.events.push({t:t + i*spb, sound:'congaO'})); [1, 3].forEach(i => p.events.push({t:t + i*spb, sound:'congaS'})); }
+}
+const grid16 = pos => [0,1,2,3].map(b => [0,.25,.5,.75].map(f => pos.some(x => Math.abs(x - (b + f)) < 1e-6) ? '●' : '・').join('')).join(' ');
+const POS16 = f => { const q = Math.round((f - Math.floor(f))*4); return ['1つ目（表）','2つ目（e）','3つ目（&）','4つ目（a）'][q]; };
+
+const SYNC_PATS = [
+  {id:'s1', name:'1・2&・4（基本の食い）', pos:[0,1.5,3]},
+  {id:'s2', name:'3拍目を前に食う', pos:[0,1,1.5,3]},
+  {id:'s3', name:'次の小節の1を食う（4&）', pos:[0,1,2,3.5]},
+  {id:'s4', name:'裏の8分だけ', pos:[.5,1.5,2.5,3.5]},
+  {id:'s5', name:'16分の食い（2a・4a）', pos:[0,1.75,2,3.75]},
+  {id:'s6', name:'付点8分の連なり（3-3-2）', pos:[0,.75,1.5,2,2.75,3.5]},
+  {id:'s7', name:'ファンクの刻み', pos:[0,.75,1.5,2.25,2.75,3.5]},
+  {id:'s8', name:'裏から入る16分', pos:[.25,.75,1.5,2.25,3,3.25]}
+];
+const LATIN = {
+  son32:  {name:'ソン・クラーベ（3-2）', bars:2, pos:[0,1.5,3, 5,6], sides:['3の側','2の側']},
+  son23:  {name:'ソン・クラーベ（2-3）', bars:2, pos:[1,2, 4,5.5,7], sides:['2の側','3の側']},
+  rum32:  {name:'ルンバ・クラーベ（3-2）', bars:2, pos:[0,1.5,3.5, 5,6], sides:['3の側','2の側']},
+  rum23:  {name:'ルンバ・クラーベ（2-3）', bars:2, pos:[1,2, 4,5.5,7.5], sides:['2の側','3の側']},
+  bossa:  {name:'ボサノヴァのクラーベ', bars:2, pos:[0,1.5,3, 5,6.5], sides:['1小節目','2小節目']},
+  tres:   {name:'トレシージョ（3-3-2）', bars:1, pos:[0,1.5,3], sides:['トレシージョ']},
+  bell68: {name:'6/8のベルパターン', bars:1, pos:[0,2/3,4/3,5/3,7/3,3,11/3], sides:['ベル'], six8:true}
+};
+
+Object.assign(STEPS, {
+  p_16:[
+    ST('16分すべて', '16ビート・お手本と一緒', {bpm:80, target:'all', groove:'pop16', guide:'with', bars:'4'}),
+    ST('8分の裏（&）', '後半は自分だけ', {bpm:92, target:'up8', groove:'pop16', guide:'fade', bars:'8'}),
+    ST('16分の裏（e・a）', 'お手本と一緒', {bpm:80, target:'ea', groove:'pop16', guide:'with', bars:'8'}),
+    ST('16分の裏（e・a）', '後半は自分だけ', {bpm:88, target:'ea', groove:'pop16', guide:'fade', bars:'8'}),
+    ST('2つ目（e）だけ', '後半は自分だけ', {bpm:88, target:'e', groove:'pop16', guide:'fade', bars:'8'}),
+    ST('4つ目（a）だけ', '後半は自分だけ', {bpm:88, target:'a', groove:'pop16', guide:'fade', bars:'8'}),
+    ST('ファンクの刻み', 'ファンクのドラム', {bpm:96, target:'funk', groove:'funk', guide:'fade', bars:'8'}),
+    ST('2つ目（e）だけ', '8ビートの上で・お手本なし', {bpm:96, target:'e', groove:'rock8', guide:'none', bars:'8'}),
+    ST('16分すべて', '速め・長め', {bpm:110, target:'all', groove:'funk', guide:'none', bars:'16'})
+  ],
+  p_sync:[
+    ST('1・2&・4', '基本の食い', {bpm:92, how:'single', pat:'s1', groove:'rock8', rounds:'2'}),
+    ST('3拍目を前に食う', '', {bpm:92, how:'single', pat:'s2', groove:'rock8', rounds:'2'}),
+    ST('次の小節の1を食う', '4&', {bpm:92, how:'single', pat:'s3', groove:'rock8', rounds:'2'}),
+    ST('裏の8分だけ', '', {bpm:96, how:'single', pat:'s4', groove:'pop16', rounds:'2'}),
+    ST('16分の食い', '2a・4a', {bpm:88, how:'single', pat:'s5', groove:'pop16', rounds:'2'}),
+    ST('付点8分の連なり', '3-3-2', {bpm:92, how:'single', pat:'s6', groove:'pop16', rounds:'2'}),
+    ST('ファンクの刻み', '', {bpm:92, how:'single', pat:'s7', groove:'pop16', rounds:'2'}),
+    ST('裏から入る16分', '', {bpm:88, how:'single', pat:'s8', groove:'pop16', rounds:'2'}),
+    ST('8つの型を順番に', 'いろいろ', {bpm:96, how:'mix', pat:'s1', groove:'pop16', rounds:'8'}),
+    ST('2小節の組み合わせ', '', {bpm:100, how:'combo2', pat:'s1', groove:'pop16', rounds:'4'})
+  ],
+  p_half:[
+    ST('ふつう ⇄ ハーフ', 'スネアと一緒', {bpm:96, seq:'nh', per:'4', guide:'with', cycles:'1'}),
+    ST('ふつう ⇄ ハーフ', '後半は自分がスネア', {bpm:100, seq:'nh', per:'4', guide:'fade', cycles:'2'}),
+    ST('ふつう ⇄ ダブル', 'スネアと一緒', {bpm:88, seq:'nd', per:'4', guide:'with', cycles:'1'}),
+    ST('ふつう ⇄ ダブル', '後半は自分がスネア', {bpm:92, seq:'nd', per:'4', guide:'fade', cycles:'2'}),
+    ST('ハーフ＋ダブル', '後半は自分がスネア', {bpm:96, seq:'all', per:'4', guide:'fade', cycles:'1'}),
+    ST('ハーフ＋ダブル', '2小節ずつ・自分がスネア', {bpm:100, seq:'all', per:'2', guide:'none', cycles:'2'})
+  ],
+  p_shuffle:[
+    ST('イーブン ⇄ シャッフル', '8分すべて・ハットあり', {bpm:96, what:'all', ref:'hat', per:'4', cycles:'1'}),
+    ST('イーブン ⇄ シャッフル', '裏だけ・ハットあり', {bpm:100, what:'up', ref:'hat', per:'4', cycles:'2'}),
+    ST('イーブン ⇄ シャッフル', '8分すべて・ハットは頭だけ', {bpm:96, what:'all', ref:'beat', per:'4', cycles:'2'}),
+    ST('イーブン ⇄ シャッフル', '裏だけ・ハットは頭だけ', {bpm:100, what:'up', ref:'beat', per:'4', cycles:'2'}),
+    ST('2小節ずつ切り替え', 'ハットは頭だけ', {bpm:110, what:'all', ref:'beat', per:'2', cycles:'3'})
+  ],
+  p_latin:[
+    ST('トレシージョ', '3-3-2・お手本と一緒', {bpm:96, pat:'tres', guide:'with', reps:'4'}),
+    ST('トレシージョ', '後半は自分だけ', {bpm:100, pat:'tres', guide:'fade', reps:'8'}),
+    ST('ソン・クラーベ（3-2）', '後半は自分だけ', {bpm:96, pat:'son32', guide:'fade', reps:'4'}),
+    ST('ソン・クラーベ（2-3）', '後半は自分だけ', {bpm:96, pat:'son23', guide:'fade', reps:'4'}),
+    ST('ルンバ・クラーベ（3-2）', '後半は自分だけ', {bpm:96, pat:'rum32', guide:'fade', reps:'4'}),
+    ST('ボサノヴァ', '後半は自分だけ', {bpm:120, pat:'bossa', guide:'fade', reps:'4'}),
+    ST('ルンバ・クラーベ（2-3）', 'お手本は最初だけ', {bpm:104, pat:'rum23', guide:'none', reps:'8'}),
+    ST('6/8のベル', 'お手本と一緒', {bpm:72, pat:'bell68', guide:'with', reps:'4'}),
+    ST('6/8のベル', '後半は自分だけ', {bpm:80, pat:'bell68', guide:'fade', reps:'8'})
+  ],
+  p_pocket:[
+    ST('4つ打ち', '前半はキックと一緒', {bpm:110, pat:'four', guide:'fade', bars:'8'}),
+    ST('ロック', '前半はキックと一緒', {bpm:96, pat:'rock', guide:'fade', bars:'8'}),
+    ST('ポップス', '前半はキックと一緒', {bpm:96, pat:'pop', guide:'fade', bars:'8'}),
+    ST('ロック', '最初から自分がキック', {bpm:100, pat:'rock', guide:'none', bars:'8'}),
+    ST('ヒップホップ', '前半はキックと一緒', {bpm:88, pat:'hiphop', guide:'fade', bars:'8'}),
+    ST('ファンク', '前半はキックと一緒', {bpm:96, pat:'funk', guide:'fade', bars:'8'}),
+    ST('ファンク', '最初から自分がキック・長め', {bpm:100, pat:'funk', guide:'none', bars:'16'})
+  ]
+});
+const POP_MODES = [
+{
+  id:'p_16', steps:STEPS.p_16, name:'16ビート', title:'16ビート（16分の裏・ファンクの刻み）',
+  help:'ドラムの16ビートに乗って、選んだ位置の16分音符を叩きます。',
+  desc:'ポップスやファンクの土台になる16分音符の感覚を鍛えます。16分の2つ目（e）と4つ目（a）は特に遅れやすい位置です。結果では1拍の中の4つの位置ごとに、ずれの傾向が分かります。',
+  opts:[BPM_OPT(92),
+    {key:'target', label:'叩く位置', type:'select', def:'all', choices:[['all','16分すべて'],['up8','8分の裏（&）だけ'],['ea','16分の裏（e と a）'],['e','2つ目（e）だけ'],['a','4つ目（a）だけ'],['funk','ファンクの刻み（1小節の型）']]},
+    {key:'groove', label:'ドラム', type:'select', def:'pop16', choices:[['rock8','8ビート'],['pop16','16ビート'],['funk','ファンク（ゴーストノート入り）']]},
+    {key:'guide', label:'お手本', type:'select', def:'fade', choices:[['with','ずっとお手本と一緒'],['fade','前半はお手本と一緒、後半は自分だけ'],['none','お手本なし']]},
+    {key:'bars', label:'長さ', type:'select', def:'8', choices:[['4','4小節'],['8','8小節'],['16','16小節']]}],
+  build(o){
+    const spb = 60/o.bpm, bar = 4*spb, p = Plan(o.bpm), bars = +o.bars, half = Math.floor(bars/2);
+    const F = {all:[0,.25,.5,.75], up8:[.5], ea:[.25,.75], e:[.25], a:[.75]}[o.target];
+    const pos = F ? [0,1,2,3].flatMap(b => F.map(f => b + f)) : [0,.75,1.5,2.25,2.75,3.5];
+    groove(p, 0, spb, o.groove);
+    p.segments.push({t:0, text:'カウント（聴くだけ）', sub:'次の小節から叩く：' + grid16(pos)});
+    for(let b=0;b<bars;b++){
+      const t = (b+1)*bar, guided = o.guide === 'with' || (o.guide === 'fade' && b < half);
+      if(b === 0 || (o.guide === 'fade' && b === half)) p.segments.push({t, text:{all:'16分すべて',up8:'8分の裏',ea:'16分の裏（e・a）',e:'2つ目（e）',a:'4つ目（a）',funk:'ファンクの刻み'}[o.target], sub:(guided ? 'お手本に重ねて　' : '自分だけで　') + grid16(pos), cls: b > 0 ? 'change' : ''});
+      groove(p, t, spb, o.groove);
+      pos.forEach(x => { p.targets.push({t:t + x*spb, layer:0, win:Math.min(0.1, 0.45*0.25*spb*(F && F.length === 1 ? 4 : F && F.length === 2 ? 2 : 1)), group:POS16(x)}); if(guided) p.events.push({t:t + x*spb, sound:'gtr'}); });
+    }
+    p.dur = (bars+1)*bar; p.label = `${{all:'16分すべて',up8:'8分の裏',ea:'e・a',e:'e',a:'a',funk:'ファンク'}[o.target]}・${{rock8:'8ビート',pop16:'16ビート',funk:'ファンク'}[o.groove]} ${o.bpm}BPM`;
+    return p;
+  }
+},
+{
+  id:'p_sync', steps:STEPS.p_sync, name:'シンコペーション', title:'シンコペーション（リズムを読んで叩く）',
+  help:'画面の ●・ の並び（1拍＝4マス）を見て、そのリズムを叩きます。お手本の小節のあとに自分の番です。',
+  desc:'ポップスの歌やリフによく出る「食う」リズムを、●・の表示（1拍＝16分4マス）から読み取って叩きます。拍の頭を外したリズムでも、ドラムの拍を感じたまま叩けるかを練習します。',
+  opts:[BPM_OPT(96),
+    {key:'how', label:'練習のしかた', type:'select', def:'single', choices:[['single','1つの型をくり返す'],['mix','いろいろな型を順番に'],['combo2','2小節の組み合わせ']]},
+    {key:'pat', label:'型（くり返すとき）', type:'select', def:'s1', choices:SYNC_PATS.map(P => [P.id, P.name]), note: v => { const P = SYNC_PATS.find(x => x.id === v); return P ? `<span class="mono">${grid16(P.pos)}</span>` : ''; }},
+    {key:'groove', label:'ドラム', type:'select', def:'pop16', choices:[['rock8','8ビート'],['pop16','16ビート']]},
+    {key:'rounds', label:'出題数・くり返し', type:'select', def:'4', choices:[['2','2'],['4','4'],['6','6'],['8','8']]}],
+  build(o){
+    const spb = 60/o.bpm, bar = 4*spb, p = Plan(o.bpm), R = +o.rounds, pick = a => a[Math.floor(Math.random()*a.length)];
+    const sel = SYNC_PATS.find(x => x.id === o.pat) || SYNC_PATS[0];
+    groove(p, 0, spb, o.groove);
+    p.segments.push({t:0, text:'カウント（聴くだけ）', sub:'次の小節でお手本が鳴ります'});
+    let t = bar;
+    const ex = (title, phrase, reps, gname) => {
+      const txt = phrase.map(grid16).join(' ｜ ');
+      p.segments.push({t, text:`お手本：${title}`, sub:txt, listen:true}); const d0 = t;
+      phrase.forEach(pos => { groove(p, t, spb, o.groove); pos.forEach(x => p.events.push({t:t + x*spb, sound:'gtr'})); t += bar; });
+      p.shade.push({t0:d0 - spb*0.3, t1:t - spb*0.3});
+      p.segments.push({t, text:`叩く：${title}`, sub:txt});
+      for(let k=0;k<reps;k++) phrase.forEach(pos => { groove(p, t, spb, o.groove);
+        pos.forEach(x => p.targets.push({t:t + x*spb, layer:0, win:Math.min(0.1, 0.45*0.25*spb), group: Math.abs(x - Math.round(x)) < 1e-6 ? '拍の頭' : '拍の頭以外（食い）', pat:gname || title})); t += bar; });
+    };
+    if(o.how === 'single') for(let k=0;k<R;k++) ex(`${sel.name}（${k+1}/${R}）`, [sel.pos], 2, sel.name);
+    else if(o.how === 'mix') for(let k=0;k<R;k++){ const P = SYNC_PATS[k % SYNC_PATS.length]; ex(`${k+1}/${R}：${P.name}`, [P.pos], 2, P.name); }
+    else for(let k=0;k<R;k++){ let A, B; do { A = pick(SYNC_PATS); B = pick(SYNC_PATS); } while(A === B); ex(`フレーズ ${k+1}/${R}`, [A.pos, B.pos], 2, null); }
+    p.dur = t; p.label = `${{single:'くり返し：' + sel.name, mix:'いろいろ', combo2:'2小節の組み合わせ'}[o.how]} ${o.bpm}BPM`;
+    return p;
+  }
+},
+{
+  id:'p_half', steps:STEPS.p_half, name:'ハーフ／ダブル', title:'ハーフタイム／ダブルタイム（ノリの切り替え）',
+  help:'スネアの位置を叩きます。ふつうは2拍目と4拍目、ハーフタイムは3拍目だけ、ダブルタイムはすべての拍の裏です。',
+  desc:'テンポは同じままで、スネアの位置が変わると曲のノリ（体感の速さ）が半分になったり倍になったりします。ロックやポップスのサビ前後、ヒップホップ、メタルなどでよく使われます。切り替えの前にはカウントダウンが出ます。',
+  opts:[BPM_OPT(100),
+    {key:'seq', label:'切り替え', type:'select', def:'nh', choices:[['nh','ふつう ⇄ ハーフタイム'],['nd','ふつう ⇄ ダブルタイム'],['all','ふつう → ハーフ → ふつう → ダブル']]},
+    {key:'per', label:'1区間', type:'select', def:'4', choices:[['2','2小節'],['4','4小節']]},
+    {key:'guide', label:'スネアの音', type:'select', def:'fade', choices:[['with','ずっと鳴る（一緒に叩く）'],['fade','前半だけ鳴る（後半は自分がスネア）'],['none','鳴らない（自分がスネア）']]},
+    {key:'cycles', label:'くり返し', type:'select', def:'2', choices:[['1','1回'],['2','2回'],['3','3回']]}],
+  build(o){
+    const spb = 60/o.bpm, bar = 4*spb, p = Plan(o.bpm), per = +o.per;
+    const NM = {pop16:'ふつう（2・4拍）', half:'ハーフタイム（3拍目）', double:'ダブルタイム（拍の裏ごと）'};
+    const base = {nh:['pop16','half'], nd:['pop16','double'], all:['pop16','half','pop16','double']}[o.seq];
+    const order = []; for(let c=0;c<+o.cycles;c++) order.push(...base); order.push('pop16');
+    const total = order.length*per, half = Math.floor(total/2);
+    groove(p, 0, spb, 'pop16');
+    p.segments.push({t:0, text:'カウント（聴くだけ）', sub:'次の小節から、スネアの位置を叩く'});
+    let t = bar, b = 0;
+    order.forEach((st, si) => {
+      const next = order[si+1];
+      p.segments.push({t, text:NM[st], sub:{pop16:'2拍目と4拍目', half:'3拍目だけ（ゆったり）', double:'すべての拍の裏（せわしなく）'}[st], cls: si > 0 ? 'change' : ''});
+      const s0 = t;
+      for(let k=0;k<per;k++){
+        const snd = o.guide === 'with' || (o.guide === 'fade' && b < half);
+        groove(p, t, spb, st, {snareOn:snd});
+        GROOVES[st].snare.forEach(f => p.targets.push({t:t + f*spb, layer:0, win:Math.min(0.12, 0.4*0.5*spb), group:NM[st]}));
+        if(next && k === per-1) for(let i=0;i<4;i++) p.segments.push({t:t + i*spb, text:NM[st], sub:`あと ${4-i} 拍で「${NM[next]}」へ`, cls:'warn'});
+        t += bar; b++;
+      }
+      p.bands.push({t0:s0 - 0.04, t1:t - 0.04, label:{pop16:'ふつう', half:'ハーフ', double:'ダブル'}[st]});
+    });
+    p.dur = t; p.label = `${{nh:'ふつう⇄ハーフ', nd:'ふつう⇄ダブル', all:'ハーフ＋ダブル'}[o.seq]}・${{with:'スネアあり',fade:'スネア前半のみ',none:'スネアなし'}[o.guide]} ${o.bpm}BPM`;
+    return p;
+  }
+},
+{
+  id:'p_shuffle', steps:STEPS.p_shuffle, name:'シャッフル ⇄ イーブン', title:'シャッフル ⇄ イーブン（跳ねる／跳ねない）',
+  help:'8分音符を叩きます。シャッフルの区間は裏を後ろに（3連の3つ目）、イーブンの区間は真ん中に置きます。',
+  desc:'ブルースやロックンロール、ポップスのバラードで使うシャッフル（跳ねる8分）と、ふつうのイーブン8分を切り替えます。結果では、それぞれの区間であなたが裏の8分を拍のどこ（%）に置いたかが出ます。',
+  opts:[BPM_OPT(100),
+    {key:'what', label:'叩くもの', type:'select', def:'all', choices:[['all','8分すべて'],['up','裏の8分だけ']]},
+    {key:'ref', label:'ハイハット', type:'select', def:'hat', choices:[['hat','裏も鳴る（分かりやすい）'],['beat','拍の頭だけ（自分で跳ねる）']]},
+    {key:'per', label:'1区間', type:'select', def:'4', choices:[['2','2小節'],['4','4小節']]},
+    {key:'cycles', label:'くり返し', type:'select', def:'2', choices:[['1','1回'],['2','2回'],['3','3回']]}],
+  build(o){
+    const spb = 60/o.bpm, bar = 4*spb, p = Plan(o.bpm), per = +o.per, r3 = 2/3;
+    const order = []; for(let c=0;c<+o.cycles;c++) order.push('even', 'shuf');
+    const sec = st => {
+      return (t, show) => {
+        if(st === 'shuf') groove(p, t, spb, 'shuffle', {r:r3, hatOn: o.ref === 'hat'});
+        else groove(p, t, spb, 'rock8', {hatOn: o.ref === 'hat'});
+        if(o.ref !== 'hat') for(let i=0;i<4;i++) p.events.push({t:t + i*spb, sound:'hat'});
+      };
+    };
+    sec('even')(0);
+    p.segments.push({t:0, text:'カウント（聴くだけ）', sub:'最初はイーブン（跳ねない）'});
+    let t = bar;
+    order.forEach((st, si) => {
+      const next = order[si+1], r = st === 'shuf' ? r3 : 0.5, nm = st === 'shuf' ? 'シャッフル（跳ねる）' : 'イーブン（跳ねない）';
+      p.segments.push({t, text:nm, sub: st === 'shuf' ? '裏を後ろへ：タッ・カ・タッ・カ' : '裏は真ん中：タ・タ・タ・タ', cls: si > 0 ? 'change' : ''});
+      const s0 = t;
+      for(let k=0;k<per;k++){
+        sec(st)(t);
+        for(let i=0;i<4;i++){
+          if(o.what === 'all') p.targets.push({t:t + i*spb, layer:0, win:Math.min(0.12, 0.4*0.33*spb), group:'表（拍の頭）', feel:st});
+          p.targets.push({t:t + (i + r)*spb, layer:0, win:Math.min(0.1, 0.4*0.33*spb), group: st === 'shuf' ? '裏（シャッフル）' : '裏（イーブン）', up:true, beatT:t + i*spb, r, feel:st});
+        }
+        if(next && k === per-1) for(let i=0;i<4;i++) p.segments.push({t:t + i*spb, text:nm, sub:`あと ${4-i} 拍で「${next === 'shuf' ? 'シャッフル' : 'イーブン'}」へ`, cls:'warn'});
+        t += bar;
+      }
+      p.bands.push({t0:s0 - 0.04, t1:t - 0.04, label: st === 'shuf' ? 'シャッフル' : 'イーブン'});
+    });
+    p.dur = t; p.label = `${o.what === 'all' ? '8分すべて' : '裏だけ'}・${o.ref === 'hat' ? 'ハット裏あり' : 'ハット頭だけ'} ${o.bpm}BPM`;
+    return p;
+  }
+},
+{
+  id:'p_latin', steps:STEPS.p_latin, name:'ラテン', title:'ラテン（クラーベ・ボサノヴァ・6/8のベル）',
+  help:'クラーベやベルのリズムを、くり返し叩きます。前半はお手本のクラベスと一緒、後半は自分だけです。',
+  desc:'サルサやキューバ音楽の土台になるクラーベ（ソン／ルンバ、3-2と2-3）、ボサノヴァ、トレシージョ（3-3-2）、アフロ・キューバンの6/8のベルを練習します。コンガとシェイカーの上で、2小節のくり返しの型を体に入れます。6/8のベルのテンポは付点4分音符の速さです。',
+  opts:[BPM_OPT(100),
+    {key:'pat', label:'リズム', type:'select', def:'son32', choices:Object.entries(LATIN).map(([k,v]) => [k, v.name]),
+      note: v => { const L = LATIN[v]; if(!L) return ''; if(L.six8) return '<span class="mono">●・●・●●・●・●・● （12/8：8分12個）</span>';
+        const bars = Array.from({length:L.bars}, (_, b) => grid16(L.pos.filter(x => x >= 4*b && x < 4*b + 4).map(x => x - 4*b)));
+        return `<span class="mono">${bars.join(' ｜ ')}</span>`; }},
+    {key:'guide', label:'お手本（クラベス）', type:'select', def:'fade', choices:[['with','ずっとお手本と一緒'],['fade','前半はお手本と一緒、後半は自分だけ'],['none','最初の1周だけ']]},
+    {key:'reps', label:'くり返し', type:'select', def:'4', choices:[['2','2周'],['4','4周'],['8','8周']]}],
+  build(o){
+    const L = LATIN[o.pat], spb = 60/o.bpm, bar = 4*spb, p = Plan(o.bpm), reps = +o.reps;
+    const style = L.six8 ? 'b68' : 'latin', cyc = L.bars*bar;
+    const posT = x => x*spb;   // 6/8 のベルは、付点4分＝1拍として x を数える
+    groove(p, 0, spb, style);
+    p.segments.push({t:0, text:'カウント（聴くだけ）', sub:'次の' + (L.bars === 2 ? '2小節' : '小節') + 'はお手本'});
+    let t = bar;
+    // お手本1周
+    p.segments.push({t, text:`お手本：${L.name}`, sub:'聴くだけ', listen:true});
+    for(let b=0;b<L.bars;b++) groove(p, t + b*bar, spb, style);
+    L.pos.forEach(x => p.events.push({t:t + posT(x), sound:'clv'}));
+    p.shade.push({t0:t - spb*0.3, t1:t + cyc - spb*0.3});
+    t += cyc;
+    const half = Math.floor(reps/2);
+    for(let k=0;k<reps;k++){
+      const guided = o.guide === 'with' || (o.guide === 'fade' && k < half);
+      if(k === 0 || (o.guide === 'fade' && k === half)) p.segments.push({t, text:L.name, sub: guided ? 'お手本に重ねて叩く' : '自分だけで叩く', cls: k > 0 ? 'change' : ''});
+      for(let b=0;b<L.bars;b++) groove(p, t + b*bar, spb, style);
+      L.pos.forEach(x => {
+        const tt = t + posT(x), side = L.sides[Math.min(L.sides.length - 1, Math.floor(x/4))];
+        if(guided) p.events.push({t:tt, sound:'clv'});
+        p.targets.push({t:tt, layer:0, win:Math.min(0.12, 0.45*(L.six8 ? 1/3 : 0.5)*spb), group: L.sides.length > 1 ? side : (Math.abs(x - Math.round(x)) < 1e-6 ? '拍の頭' : '拍の間')});
+      });
+      t += cyc;
+    }
+    p.dur = t; p.label = `${L.name}・${{with:'お手本と',fade:'お手本→自分',none:'お手本なし'}[o.guide]} ${o.bpm}BPM`;
+    return p;
+  }
+},
+{
+  id:'p_pocket', steps:STEPS.p_pocket, name:'キックになる', title:'キックになる（ポケット）',
+  help:'ドラムのキック（バスドラム）のリズムを叩きます。前半はキックの音と一緒、後半はキックが消えて、あなたがキックになります。',
+  desc:'バンドのグルーヴ（ポケット）は、キックとベースがぴったり合うことで生まれます。ハイハットとスネアだけが鳴る中で、キックの型を正確に叩けるかを練習します。ベースを弾く人の感覚にも近い練習です。',
+  opts:[BPM_OPT(96),
+    {key:'pat', label:'キックの型', type:'select', def:'rock', choices:[['four','4つ打ち（ダンス）'],['rock','ロック（1・3・3&）'],['pop','ポップス（1・2a・3&）'],['funk','ファンク（1・1a・3&・4e）'],['hiphop','ヒップホップ（1・1a・2&・3a）']],
+      note: v => `<span class="mono">${grid16({four:[0,1,2,3], rock:[0,2,2.5], pop:[0,1.75,2.5], funk:[0,.75,2.5,3.25], hiphop:[0,.75,1.5,2.75]}[v] || [])}</span>`},
+    {key:'guide', label:'キックの音', type:'select', def:'fade', choices:[['with','ずっと鳴る'],['fade','前半だけ鳴る'],['none','鳴らない（最初から自分がキック）']]},
+    {key:'bars', label:'長さ', type:'select', def:'8', choices:[['4','4小節'],['8','8小節'],['16','16小節']]}],
+  build(o){
+    const K = {four:[0,1,2,3], rock:[0,2,2.5], pop:[0,1.75,2.5], funk:[0,.75,2.5,3.25], hiphop:[0,.75,1.5,2.75]}[o.pat];
+    const NM = {four:'4つ打ち', rock:'ロック', pop:'ポップス', funk:'ファンク', hiphop:'ヒップホップ'}[o.pat];
+    const spb = 60/o.bpm, bar = 4*spb, p = Plan(o.bpm), bars = +o.bars, half = Math.floor(bars/2);
+    const st = o.pat === 'funk' ? 'funk' : 'pop16';
+    const drum = (t, withKick) => { groove(p, t, spb, st, {kickOn:false}); if(withKick) K.forEach(f => p.events.push({t:t + f*spb, sound:'kick'})); };
+    drum(0, true);
+    p.segments.push({t:0, text:'カウント（聴くだけ）', sub:`キックの型：${grid16(K)}`});
+    for(let b=0;b<bars;b++){
+      const t = (b+1)*bar, guided = o.guide === 'with' || (o.guide === 'fade' && b < half);
+      if(b === 0 || (o.guide === 'fade' && b === half)) p.segments.push({t, text:`${NM}のキック`, sub:(guided ? 'キックの音と一緒に　' : 'あなたがキック　') + grid16(K), cls: b > 0 ? 'change' : ''});
+      if(o.guide === 'fade' && b === half - 1) p.segments.push({t:t + 3*spb, text:`${NM}のキック`, sub:'次の小節からキックが消えます', cls:'warn'});
+      drum(t, guided);
+      K.forEach(f => p.targets.push({t:t + f*spb, layer:0, win:Math.min(0.1, 0.45*0.75*spb), group: guided ? 'キックの音あり' : '自分だけ'}));
+    }
+    if(o.guide === 'fade') p.shade.push({t0:(half+1)*bar - spb*0.3, t1:(bars+1)*bar});
+    p.dur = (bars+1)*bar; p.shadeLabel = 'キックが消えた区間'; p.label = `${NM}・${{with:'キックあり',fade:'キック前半のみ',none:'キックなし'}[o.guide]} ${o.bpm}BPM`;
+    return p;
+  }
+}
+];
+
+const EDITIONS = {basic:{name:'入門編', modes:MODES}, classic:{name:'クラシック編', modes:CLASSIC_MODES}, jazz:{name:'ジャズ編', modes:JAZZ_MODES}, pop:{name:'ポップス・ラテン編', modes:POP_MODES}};
+let edition = store.get('rd.edition', 'basic'); if(!EDITIONS[edition]) edition = 'basic';
+
+/* ================= UI: tabs & options ================= */
+let mode = (EDITIONS[edition].modes.find(m => m.id === store.get('rd.mode.' + edition, '')) || EDITIONS[edition].modes[0]);
+const optState = store.get('rd.opts', {});
+function renderTabs(){
+  $('#tabs').innerHTML = '';
+  const seg = $('#edSeg'); seg.innerHTML = '';
+  Object.entries(EDITIONS).forEach(([k, E]) => {
+    const b = document.createElement('button'); b.textContent = E.name; if(k === edition) b.className = 'on';
+    b.onclick = () => { if(sess && sess.running) return; edition = k; store.set('rd.edition', k);
+      mode = E.modes.find(m => m.id === store.get('rd.mode.' + k, '')) || E.modes[0];
+      renderTabs(); renderSetup(); show('setup'); };
+    seg.appendChild(b);
+  });
+  EDITIONS[edition].modes.forEach(m => {
+    const b = document.createElement('button');
+    b.textContent = m.name; if(m === mode) b.className = 'on';
+    b.onclick = () => { if(sess && sess.running) return; mode = m; store.set('rd.mode.' + edition, m.id); renderTabs(); renderSetup(); show('setup'); };
+    $('#tabs').appendChild(b);
+  });
+}
+let curStep = null, applying = false;
+const stepBest = () => store.get('rd.stepbest.' + mode.id, {});
+function renderSteps(){
+  const box = $('#steps');
+  if(!mode.steps){ box.style.display = 'none'; box.innerHTML = ''; return; }
+  const best = stepBest(), n = mode.steps.length, done = mode.steps.filter((_,i) => best[i] >= 80).length;
+  box.style.display = 'block';
+  const S = curStep !== null ? mode.steps[curStep] : null;
+  box.innerHTML = `<div class="st-track">
+      <button class="st-arrow" id="stPrev" ${curStep === null || curStep === 0 ? 'disabled' : ''}>◀</button>
+      <div class="st-dots">${mode.steps.map((T,i) => `<button class="st-dot${i===curStep?' on':''}${best[i]>=80?' done':''}" data-i="${i}" title="${i+1}. ${T.title}${T.sub ? '（' + T.sub + '）' : ''}${best[i]!=null?' 最高'+best[i]+'点':''}">${best[i]>=80?'✓':i+1}</button>`).join('')}</div>
+      <button class="st-arrow" id="stNext" ${curStep === null || curStep === n-1 ? 'disabled' : ''}>▶</button>
+      <span class="st-prog">${done}/${n} クリア</span>
+    </div>
+    <div class="st-info">${S ? `<b>ステップ ${curStep+1}</b>　${S.title}<span class="st-sub">（${S.sub ? S.sub + '・' : ''}${S.o.bpm}BPM）</span>${best[curStep]!=null ? `<span class="st-best${best[curStep]>=80?' ok':''}">最高 ${best[curStep]}点${best[curStep]>=80?' ✓':''}</span>` : '<span class="st-best">80点でクリア</span>'}`
+      : '<span class="hint">いまは「くわしく設定する」で自由に組み合わせた設定です。番号を押すとステップに戻ります。</span>'}</div>`;
+  box.querySelectorAll('.st-dot').forEach(b => b.onclick = () => applyStep(+b.dataset.i));
+  const pv = $('#stPrev'), nx = $('#stNext');
+  pv.onclick = () => { if(curStep > 0) applyStep(curStep - 1); };
+  nx.onclick = () => { if(curStep !== null && curStep < n-1) applyStep(curStep + 1); };
+}
+function applyStep(i){
+  curStep = i; const S = mode.steps[i]; applying = true;
+  Object.entries(S.o).forEach(([k,v]) => {
+    const el = document.getElementById('op_' + k); if(!el) return;
+    if(el.type === 'checkbox') el.checked = !!v; else { el.value = v; if(k === 'bpm' && $('#op_bpm_r')) $('#op_bpm_r').value = v; }
+    el.dispatchEvent(new Event('change', {bubbles:true}));
+  });
+  applying = false; store.set('rd.step.' + mode.id, i); renderSteps();
+}
+function firstOpenStep(){ const b = stepBest(); const i = mode.steps.findIndex((_,k) => !(b[k] >= 80)); return i < 0 ? mode.steps.length - 1 : i; }
+function getOpts(){
+  const o = {};
+  mode.opts.forEach(op => {
+    const el = document.getElementById('op_' + op.key);
+    if(op.type === 'check') o[op.key] = el.checked;
+    else if(op.type === 'bpm') o[op.key] = Math.max(30, Math.min(260, +el.value || op.def));
+    else o[op.key] = el.value;
+  });
+  optState[mode.id] = o; store.set('rd.opts', optState);
+  return o;
+}
+function renderSetup(){
+  $('#mTitle').textContent = mode.title;
+  $('#mDesc').textContent = mode.desc;
+  const saved = optState[mode.id] || {};
+  const box = $('#opts'); box.innerHTML = '';
+  mode.opts.forEach(op => {
+    const v = saved[op.key] !== undefined ? saved[op.key] : op.def;
+    const d = document.createElement('div'); d.className = 'opt' + (op.type === 'check' ? ' check' : '');
+    if(op.type === 'bpm'){
+      d.innerHTML = `<label>${op.label}${mode.bpmNote ? '（' + mode.bpmNote + '）' : ''}</label>
+        <div class="bpmrow"><input type="range" min="30" max="260" value="${v}" id="op_bpm_r"><input type="number" min="30" max="260" value="${v}" id="op_bpm"></div>`;
+      box.appendChild(d);
+      const r = d.querySelector('#op_bpm_r'), n = d.querySelector('#op_bpm');
+      r.oninput = () => n.value = r.value; n.oninput = () => r.value = n.value;
+    } else if(op.type === 'select'){
+      d.innerHTML = `<label>${op.label}</label><select id="op_${op.key}">${op.choices.map(([k,l]) => `<option value="${k}"${k==v?' selected':''}>${l}</option>`).join('')}</select>`;
+      box.appendChild(d);
+      if(op.note){
+        d.classList.add('wide');
+        const nd = document.createElement('div'); nd.className = 'opnote'; d.appendChild(nd);
+        const sel = d.querySelector('select'), upd = () => nd.innerHTML = op.note(sel.value);
+        sel.addEventListener('change', upd); upd();
+      }
+    } else {
+      d.innerHTML = `<label><input type="checkbox" id="op_${op.key}"${v?' checked':''}> ${op.label}</label>`;
+      box.appendChild(d);
+    }
+  });
+  // steps
+  const freeEdit = () => { if(!applying && curStep !== null){ curStep = null; store.set('rd.step.' + mode.id, -1); renderSteps(); } };
+  box.onchange = freeEdit; box.oninput = freeEdit;
+  if(mode.steps){
+    $('#optSum').style.display = '';
+    const saved = store.get('rd.step.' + mode.id, null);
+    if(saved === -1){ curStep = null; renderSteps(); $('#optDet').open = true; }
+    else { applyStep(saved !== null && mode.steps[saved] ? saved : firstOpenStep()); $('#optDet').open = false; }
+  } else { curStep = null; renderSteps(); $('#optSum').style.display = 'none'; $('#optDet').open = true; }
+  $('#startRow').style.display = mode.quiz ? 'none' : '';
+  const ex = $('#extraRow');
+  if(mode.extra){ ex.style.display = 'flex'; ex.innerHTML = `<button class="btn" id="extraBtn">▶ ${mode.extra.label}</button><span class="hint" id="extraMsg"></span>`;
+    $('#extraBtn').onclick = e => mode.extra.run(e.target); }
+  else { ex.style.display = 'none'; ex.innerHTML = ''; compareTimer.forEach(clearTimeout); }
+  $('#quiz').style.display = mode.quiz ? '' : 'none';
+  $('#keyHint').innerHTML = mode.id === 'poly'
+    ? '<kbd>Enter</kbd> でスタート。左手 <kbd>F</kbd><kbd>D</kbd>、右手 <kbd>J</kbd><kbd>K</kbd> で叩く（画面のパッドも可）'
+    : '<kbd>Enter</kbd> でスタート。<kbd>Space</kbd> など好きなキーで叩く（画面のパッドも可）';
+  $('#calibNotice').style.display = (calib === null && !mode.quiz) ? '' : 'none';
+  if(mode.quiz) renderQuiz();
+  renderHist();
+}
+function show(which){
+  ['setup','play','result'].forEach(id => $('#' + id).style.display = id === which ? 'block' : 'none');
+  $('#tabs').style.opacity = which === 'play' ? .4 : 1;
+  $('#histCard').style.display = which === 'play' ? 'none' : 'block';
+}
+
+function updateCalibBtn(){
+  $('#calibBtn').textContent = '遅延補正: ' + (calib === null ? '未設定' : fmt(calib) + ' ms');
+  $('#calibVal').textContent = (calib === null ? 0 : fmt(calib)) + ' ms';
+}
+
+/* ================= Session engine ================= */
+let sess = null;
+const LEAD = 1.8;   // seconds of ready message before the count-in
+function startSession(plan, opts={}){
+  ac();
+  if(document.activeElement) document.activeElement.blur();
+  plan.events.sort((a,b) => a.t - b.t);
+  plan.vis.sort((a,b) => a.t - b.t);
+  plan.targets.sort((a,b) => a.t - b.t);
+  sess = {plan, t0: ctx.currentTime + LEAD, ei:0, vi:0, si:-1, taps:[], running:true,
+          calibMs: opts.calibOverride !== undefined ? opts.calibOverride : (calib || 0),
+          onDone: opts.onDone, lastVis:{}};
+  // rows
+  const rows = $('#rows'); rows.innerHTML = '';
+  plan.rows.forEach((r, ri) => {
+    const d = document.createElement('div'); d.className = 'row';
+    d.innerHTML = `<span class="rl">${r.label || ''}</span>` + Array.from({length:r.n}, (_,i) => `<span class="dot${i===0?' first':''}" data-r="${ri}" data-i="${i}"></span>`).join('') + '<span class="rl"></span>';
+    rows.appendChild(d);
+  });
+  // pads
+  const pads = $('#pads'); pads.innerHTML = '';
+  plan.layers.forEach(L => {
+    const d = document.createElement('div'); d.className = 'pad'; d.dataset.layer = L.id;
+    d.innerHTML = `<span class="pl" id="padLive${L.id}">&nbsp;</span><span>${L.label}</span>`;
+    d.addEventListener('pointerdown', e => { e.preventDefault(); tap(L.id, e.timeStamp); });
+    pads.appendChild(d);
+  });
+  $('#segText').textContent = 'まもなく始まります';
+  $('#segText').className = ''; $('#segText').style.color = ''; $('#segSub').className = '';
+  $('#segSub').textContent = '最初の1小節はカウント（聴くだけ）。次の小節から叩きます';
+  $('#playHelp').innerHTML = (opts.help || mode.help || '') + (plan.layers.length > 1 ? '' : '　<kbd>Space</kbd> など好きなキーで叩く（画面のパッドも可）') + '　／　<kbd>Esc</kbd> で中止。終わると自動で結果が出ます';
+  $('#live').innerHTML = '&nbsp;';
+  $('#live').style.display = plan.layers.length > 1 ? 'none' : '';
+  $('#cond').style.display = plan.arcs ? 'block' : 'none';
+  sess.ai = 0;
+  show('play');
+  sess.timer = setInterval(schedule, 20);
+  schedule();
+  requestAnimationFrame(draw);
+}
+function schedule(){
+  if(!sess || !sess.running) return;
+  const now = ctx.currentTime, ev = sess.plan.events;
+  if(sess.plan.onTick) sess.plan.onTick(now - sess.t0, heardNow() - sess.t0 - sess.calibMs/1000, sess);
+  while(sess.ei < ev.length && sess.t0 + ev[sess.ei].t < now + 0.15){
+    const e = ev[sess.ei++]; if(e.sound) playSound(sess.t0 + e.t, e.sound, e.f);
+  }
+  if(heardNow() > sess.t0 + sess.plan.dur + 0.35) finish();
+}
+function draw(){
+  if(!sess || !sess.running) return;
+  const now = heardNow() - sess.t0, p = sess.plan;
+  // segment
+  let si = sess.si;
+  while(si + 1 < p.segments.length && p.segments[si+1].t <= now + 0.02) si++;
+  if(si !== sess.si && si >= 0){
+    sess.si = si; const s = p.segments[si];
+    const st = $('#segText');
+    st.textContent = s.text; $('#segSub').textContent = s.sub || '';
+    st.className = s.silent ? 'silent' : '';
+    if(s.cls === 'change'){ void st.offsetWidth; st.className = 'change'; }
+    st.style.color = s.color || '';
+    $('#segSub').className = s.cls === 'warn' ? 'warn' : '';
+  }
+  // visual beats
+  while(sess.vi < p.vis.length && p.vis[sess.vi].t <= now){ const v = p.vis[sess.vi++]; sess.lastVis[v.row] = v; }
+  let anyShow = false;
+  p.rows.forEach((r, ri) => {
+    const v = sess.lastVis[ri];
+    const dots = document.querySelectorAll(`.dot[data-r="${ri}"]`);
+    dots.forEach((d, i) => d.classList.toggle('on', !!(v && v.show && v.idx === i && now - v.t < 0.15)));
+    if(!v || v.show) anyShow = true;
+  });
+  $('#rows').classList.toggle('ghost', !anyShow);
+  $('#progBar').style.width = Math.max(0, Math.min(100, now / p.dur * 100)) + '%';
+  if(p.arcs) drawCond(now, p.arcs);
+  requestAnimationFrame(draw);
+}
+function drawCond(now, arcs){
+  const cv = $('#cond'), g = cv.getContext('2d'), W = cv.width, H = cv.height, base = H - 24, top = 22;
+  while(sess.ai < arcs.length && arcs[sess.ai][1] <= now) sess.ai++;
+  const a = arcs[sess.ai];
+  let h = 0, active = false, ictus = false;
+  if(a && now >= a[0]){ const ph = (now - a[0])/(a[1] - a[0]); h = Math.pow(Math.sin(Math.PI*ph), 0.75); active = true; }
+  const prev = arcs[sess.ai - 1];
+  if(prev && now - prev[1] < 0.07) ictus = true;
+  g.clearRect(0, 0, W, H);
+  g.strokeStyle = '#cfc8bb'; g.lineWidth = 2; g.beginPath(); g.moveTo(40, base + 16); g.lineTo(W - 40, base + 16); g.stroke();
+  const y = base - h*(base - top);
+  g.fillStyle = ictus ? '#c0392b' : active ? '#3d4a8f' : '#b9b4c9';
+  g.beginPath(); g.arc(W/2, y, ictus ? 17 : 14, 0, Math.PI*2); g.fill();
+}
+function gradeOf(d){
+  const a = Math.abs(d);
+  return a <= 20 ? 'perfect' : a <= 40 ? 'good' : a <= 70 ? 'ok' : 'off';
+}
+const GCOL = {perfect:'#2a9d6f', good:'#86b33a', ok:'#e0a800', off:'#e67e22', miss:'#d64545'};
+function tap(layer, ts){
+  if(!sess || !sess.running) return;
+  if(tapKind !== 'none') percussion(ctx.currentTime, tapKind, layer);
+  const t = evToHeard(ts) - sess.t0 - sess.calibMs/1000;
+  sess.taps.push({t, layer});
+  // live feedback
+  let best = null;
+  for(const tg of sess.plan.targets){ if(tg.layer !== layer) continue;
+    const d = t - tg.t; if(Math.abs(d) <= tg.win && (!best || Math.abs(d) < Math.abs(best))) best = d; }
+  const el = sess.plan.layers.length > 1 ? $('#padLive' + layer) : $('#live');
+  if(best === null){ el.textContent = '—'; el.style.color = '#aaa'; }
+  else { const ms = best*1000; el.textContent = fmt(ms) + ' ms'; el.style.color = GCOL[gradeOf(ms)]; }
+  const pad = document.querySelector(`.pad[data-layer="${layer}"]`);
+  if(pad){ pad.classList.add('flash'); setTimeout(() => pad.classList.remove('flash'), 90); }
+}
+function stopSession(){
+  if(!sess) return;
+  sess.running = false; clearInterval(sess.timer);
+  if(ctx){ newMaster(); }
+}
+function finish(){
+  const s = sess; stopSession();
+  s.plan.targets.sort((a,b) => a.t - b.t);
+  const ev = evaluate(s.plan, s.taps);
+  if(s.onDone) s.onDone(ev, s); else renderResult(s.plan, ev);
+}
+
+/* ================= Evaluation ================= */
+function evaluate(plan, taps){
+  const res = plan.targets.map(tg => Object.assign({}, tg, {d:null, tapT:null}));
+  const extras = [];
+  const layers = [...new Set(res.map(r => r.layer))];
+  layers.forEach(L => {
+    const T = res.filter(r => r.layer === L), P = taps.filter(p => p.layer === L);
+    const pairs = [];
+    T.forEach((tg, i) => P.forEach((p, j) => { const d = p.t - tg.t; if(Math.abs(d) <= tg.win) pairs.push([Math.abs(d), i, j, d]); }));
+    pairs.sort((a,b) => a[0] - b[0]);
+    const ut = new Set(), up = new Set();
+    for(const [, i, j, d] of pairs){ if(ut.has(i) || up.has(j)) continue; ut.add(i); up.add(j); T[i].d = d*1000; T[i].tapT = P[j].t; }
+    if(!T.length) return;
+    const lo = T[0].t - T[0].win, hi = T[T.length-1].t + T[T.length-1].win;
+    P.forEach((p, j) => { if(!up.has(j) && p.t >= lo && p.t <= hi) extras.push(p); });
+  });
+  return {res, extras};
+}
+function stats(list){
+  const ds = list.filter(r => r.d !== null).map(r => r.d);
+  const n = ds.length, N = list.length;
+  if(!n) return {n, N, hit:0, mean:null, sd:null, score:0};
+  const mean = ds.reduce((a,b)=>a+b,0)/n;
+  const sd = n > 1 ? Math.sqrt(ds.reduce((a,b)=>a+(b-mean)**2,0)/(n-1)) : 0;
+  const pts = {perfect:100, good:80, ok:50, off:20};
+  const score = list.reduce((s,r) => s + (r.d === null ? 0 : pts[gradeOf(r.d)]), 0) / N;
+  return {n, N, hit:n/N, mean, sd, score};
+}
+// regression slope of tap time vs target time
+function slopeOf(list){
+  const h = list.filter(r => r.d !== null);
+  if(h.length < 3) return null;
+  const xs = h.map(r => r.t), ys = h.map(r => r.tapT);
+  const mx = xs.reduce((a,b)=>a+b,0)/xs.length, my = ys.reduce((a,b)=>a+b,0)/ys.length;
+  let sxy = 0, sxx = 0; xs.forEach((x,i) => { sxy += (x-mx)*(ys[i]-my); sxx += (x-mx)**2; });
+  return sxx ? sxy/sxx : null;
+}
+function tendency(st){
+  if(st.mean === null) return '—';
+  const m = st.mean;
+  const a = Math.abs(m) < 8 ? 'ほぼ中心' : m > 0 ? '遅れ気味' : '前のめり';
+  const b = st.sd < 15 ? 'とても安定' : st.sd < 25 ? '安定' : st.sd < 40 ? 'ややばらつく' : 'ばらつき大';
+  return a + '・' + b;
+}
+
+/* ================= Results ================= */
+let lastPlanMaker = null;
+function renderResult(plan, ev){
+  const {res, extras} = ev, st = stats(res);
+  $('#rTitle').textContent = '結果 ─ ' + mode.title;
+  const rank = st.score >= 90 ? 'S' : st.score >= 78 ? 'A' : st.score >= 62 ? 'B' : st.score >= 45 ? 'C' : 'D';
+  $('#summary').innerHTML = `
+    <div class="stat"><div class="k">スコア</div><div class="v">${st.score.toFixed(0)} <small>ランク ${rank}</small></div></div>
+    <div class="stat"><div class="k">叩けた音</div><div class="v">${(st.hit*100).toFixed(0)}% <small>${st.n}/${st.N}${extras.length ? '・余分 ' + extras.length : ''}</small></div></div>
+`;
+  // comments
+  const C = [], K = [];
+  let lateGroup = null;
+  if(st.mean !== null){
+    C.push(Math.abs(st.mean) < 8 ? `平均するとほぼクリックの中心で叩けています（${fmt(st.mean)} ms）。`
+      : st.mean > 0 ? `平均して ${st.mean.toFixed(0)} ms 遅れ気味（後ろ寄り）です。`
+      : `平均して ${Math.abs(st.mean).toFixed(0)} ms 早め（前のめり）です。`);
+    C.push(`ばらつきは ${st.sd.toFixed(0)} ms で「${tendency(st).split('・')[1]}」。` + (st.sd >= 25 ? '平均より、まずこの値を小さくするのが目標です。' : ''));
+  }
+  const groups = [...new Set(res.map(r => r.group).filter(Boolean))];
+  const gst = groups.map(g => [g, stats(res.filter(r => r.group === g))]);
+  if(gst.length > 1){
+    const valid = gst.filter(([,s]) => s.n >= 3);
+    if(valid.length > 1){
+      const worstSd = valid.reduce((a,b) => b[1].sd > a[1].sd ? b : a);
+      const ms = valid.map(([,s]) => s.mean);
+      const spread = Math.max(...ms) - Math.min(...ms);
+      C.push(`いちばん不安定なのは「${worstSd[0]}」（ばらつき ${worstSd[1].sd.toFixed(0)} ms）。`);
+      if(spread > 15 && ['steady','ladder','echo','j_comp','p_16','p_sync'].includes(mode.id)){
+        const late = valid.reduce((a,b) => b[1].mean > a[1].mean ? b : a), early = valid.reduce((a,b) => b[1].mean < a[1].mean ? b : a);
+        C.push(`「${late[0]}」は「${early[0]}」より平均 ${spread.toFixed(0)} ms 遅く叩いています。均等に分割できていない可能性があります。`);
+        lateGroup = [late[0], early[0], spread];
+      }
+    }
+    const missy = gst.filter(([,s]) => s.N >= 3 && s.hit < .7);
+    if(missy.length) C.push(`「${missy.map(g=>g[0]).join('」「')}」で叩けていない音が多めです。`);
+  }
+  // mode-specific
+  if(mode.id === 'steady' || mode.id === 'poly' || mode.id === 'j_feel' || mode.id === 'j_swing'){
+    const sl = slopeOf(res.filter(r => r.layer === 0));
+    if(sl){ const real = plan.bpm / sl; const pct = (sl - 1) * -100;
+      if(Math.abs(pct) >= 0.7){ C.push(`全体を通すと、だんだん${pct > 0 ? '速く' : '遅く'}なる傾向があります（実測 約 ${real.toFixed(1)} BPM）。`);
+        K.push({k:'テンポの流れ', v:pct > 0 ? '速くなる' : '遅くなる', sub:`実測 ${real.toFixed(1)} BPM`, bad:true}); } }
+  }
+  if(mode.id === 'vanish'){
+    const blocks = [...new Set(res.filter(r => r.kind === 'off').map(r => r.block))];
+    const bpms = [];
+    blocks.forEach(b => { const sl = slopeOf(res.filter(r => r.block === b)); if(sl) bpms.push(plan.bpm / sl); });
+    if(bpms.length){
+      const avg = bpms.reduce((a,b)=>a+b,0)/bpms.length, diff = avg - plan.bpm;
+      C.push(`無音区間のテンポは平均 約 ${avg.toFixed(1)} BPM（設定 ${plan.bpm}）。` +
+        (Math.abs(diff) < plan.bpm*0.01 ? 'ほぼ保てています。' : diff > 0 ? 'クリックがないと走る（速くなる）傾向です。' : 'クリックがないと遅くなる（もたる）傾向です。'));
+      K.push({k:'無音中のテンポ', v:avg.toFixed(1), u:'BPM', sub:`設定 ${plan.bpm}・${Math.abs(diff) < plan.bpm*0.01 ? '保てている' : diff > 0 ? '走る' : 'もたる'}`, bad:Math.abs(diff) >= plan.bpm*0.01, next: diff > 0 ? 'クリックが消えても急がない。間をたっぷり感じて' : 'クリックが消えても前に進む気持ちで'});
+    }
+    const returns = res.filter(r => r.kind === 'on' && r.first && r.block > 0 && r.d !== null);
+    if(returns.length) { const m = returns.reduce((a,r)=>a+r.d,0)/returns.length;
+      C.push(`クリックが戻った最初の1拍のずれは平均 ${fmt(m)} ms です。`);
+      K.push({k:'クリックが戻った瞬間', v:fmt(m), u:'ms', sub:'0 に近いほど良い', bad:Math.abs(m) > 40, next:'無音のあいだも、拍を数え続ける'}); }
+    const offSt = stats(res.filter(r => r.kind === 'off')), onSt = stats(res.filter(r => r.kind === 'on'));
+    if(offSt.N && offSt.hit < 0.8) C.push(`無音区間で叩けなかった（ずれが大きすぎた）音が ${offSt.N - offSt.n} 個あります。テンポを落とすか、無音を短くしてみてください。`);
+    if(onSt.sd !== null && offSt.sd !== null && offSt.sd > onSt.sd * 1.6) C.push('クリックがあるときに比べ、無音区間で大きくばらつきます。');
+  }
+  if(mode.id === 'j_swing'){
+    const ups = res.filter(r => r.up && r.d !== null);
+    if(ups.length >= 3){
+      const rs = ups.map(r => (r.tapT - r.beatT)/(60/plan.bpm)*100), m = rs.reduce((a,b)=>a+b,0)/rs.length;
+      const sd = Math.sqrt(rs.reduce((a,b)=>a+(b-m)**2,0)/rs.length);
+      C.push(`あなたが叩いた裏の位置（スウィング比）は平均 <b>${m.toFixed(0)}%</b>（目標 ${(plan.ratio*100).toFixed(0)}%、ばらつき ${sd.toFixed(0)}%）。` +
+        (m < plan.ratio*100 - 4 ? '目標よりイーブン寄り（裏が早い）です。' : m > plan.ratio*100 + 4 ? '目標より跳ねすぎ（裏が遅い）です。' : '目標どおりです。'));
+      K.push({k:'あなたのスウィング比', v:m.toFixed(0), u:'%', sub:`目標 ${(plan.ratio*100).toFixed(0)}%・${m < plan.ratio*100 - 4 ? 'イーブン寄り' : m > plan.ratio*100 + 4 ? '跳ねすぎ' : '目標どおり'}`, bad:Math.abs(m - plan.ratio*100) > 4, next: m < plan.ratio*100 ? '裏の8分を、もう少し後ろに引きずるように' : '裏の8分を、もう少し前に。跳ねすぎないように'});
+    }
+  }
+  if(mode.id === 'j_feel'){
+    const feels = [...new Set(res.map(r => r.feel))], real = {};
+    feels.forEach(fn => {
+      const rr = res.filter(r => r.feel === fn), off = rr[0].off;
+      [['お手本あり', rr.filter(r => r.guided)], ['自分だけ', rr.filter(r => !r.guided)]].forEach(([lab, sub]) => {
+        const s2 = stats(sub); if(!s2.n) return;
+        const rl = s2.mean + off; if(lab === '自分だけ' || real[fn] === undefined) real[fn] = rl;
+        const showLab = rr.some(r => r.guided) && rr.some(r => !r.guided) ? `（${lab}）` : '';
+        C.push(`「${fn}」${showLab}：狙い ${fmt(off)} ms に対して、実際はベースから ${fmt(rl)} ms（差 ${fmt(s2.mean)} ms）。`);
+        if(lab === '自分だけ' || !rr.some(r => !r.guided)) K.push({k:`${fn}${showLab ? '（自分だけ）' : ''}`, v:fmt(rl), u:'ms', sub:`狙い ${fmt(off)} ms`, bad:Math.abs(s2.mean) > 15});
+      });
+    });
+    if(feels.length === 2 && real[feels[0]] !== undefined && real[feels[1]] !== undefined){
+      const d = Math.abs(real[feels[1]] - real[feels[0]]);
+      C.push(`2つのノリの差は ${d.toFixed(0)} ms でした（狙いは 30 ms）。` + (d < 18 ? 'まだ弾き分けがはっきりしていません（狙いの半分程度）。' : d > 45 ? '差を付けすぎています。' : 'しっかり弾き分けられています。'));
+      K.unshift({k:'2つのノリの差', v:d.toFixed(0), u:'ms', sub:`狙い 30 ms・${d < 18 ? '差が小さい' : d > 45 ? '差が大きすぎ' : '弾き分けOK'}`, bad:d < 18 || d > 45, next: d < 18 ? 'レイドバックをもう少しはっきり後ろに置く（お手本をよく聴いて）' : '差を少し小さく。ほんのわずかに後ろで十分'});
+    }
+  }
+  if(mode.id === 'j_thin'){
+    const stages = [...new Set(res.map(r => r.stage))];
+    const parts = stages.map(si => { const rr = res.filter(r => r.stage === si), sl = slopeOf(rr); return sl ? `${rr[0].group.replace(/（.*）/,'')} ${(plan.bpm/sl).toFixed(1)}` : null; }).filter(Boolean);
+    if(parts.length) C.push(`段階ごとの実際のテンポ（BPM、設定 ${plan.bpm}）：${parts.join(' ／ ')}`);
+  }
+  if(mode.id === 'j_over'){
+    const off = res.filter(r => r.group === 'ガイドなし'), sl = slopeOf(off);
+    if(sl){ C.push(`ガイドなしの区間のテンポは 約 ${(plan.bpm/sl).toFixed(1)} BPM（設定 ${plan.bpm}）。` + (Math.abs(sl-1) < 0.012 ? '周期を保てています。' : sl < 1 ? '周期が詰まって（速くなって）います。' : '周期が伸びて（遅くなって）います。'));
+      K.push({k:'ガイドなしのテンポ', v:(plan.bpm/sl).toFixed(1), u:'BPM', sub:`設定 ${plan.bpm}`, bad:Math.abs(sl-1) >= 0.012, next:'ガイドが消えても、まとまりを数え続ける'}); }
+  }
+  if(mode.id === 'j_comp'){
+    const pats = [...new Set(res.map(r => r.pat))];
+    const ps = pats.map(pn => [pn, stats(res.filter(r => r.pat === pn))]).filter(([,x]) => x.N);
+    if(ps.length > 1){ const w = ps.reduce((a,b) => (b[1].score < a[1].score ? b : a));
+      C.push(`いちばん苦手だったのは「${w[0]}」（スコア ${w[1].score.toFixed(0)}）。`);
+      K.push({k:'いちばん苦手', v:w[0], sub:`スコア ${w[1].score.toFixed(0)}`, small:true}); }
+  }
+  if(mode.id === 'p_shuffle'){
+    [['shuf','シャッフル',66.7],['even','イーブン',50]].forEach(([fe, nm, tg]) => {
+      const ups = res.filter(r => r.up && r.feel === fe && r.d !== null); if(ups.length < 3) return;
+      const m = ups.map(r => (r.tapT - r.beatT)/(60/plan.bpm)*100).reduce((a,b)=>a+b,0)/ups.length;
+      K.push({k:`${nm}での裏の位置`, v:m.toFixed(0), u:'%', sub:`目標 ${tg.toFixed(0)}%`, bad:Math.abs(m - tg) > 5,
+        next: fe === 'shuf' ? (m < tg ? 'シャッフルでは裏をもっと後ろへ（タッ・カ）' : 'シャッフルで跳ねすぎ。3連の3つ目に') : (m > tg ? 'イーブンに戻ったら、跳ねを残さず真ん中に' : 'イーブンの裏が早い。真ん中まで待つ')});
+      C.push(`${nm}の区間で、裏の8分は拍の ${m.toFixed(0)}% の位置（目標 ${tg.toFixed(0)}%）でした。`);
+    });
+  }
+  if(mode.id === 'p_pocket' || mode.id === 'p_half'){
+    const a = stats(res.filter(r => r.group === 'キックの音あり' || false)), b = stats(res.filter(r => r.group === '自分だけ'));
+    if(a.sd !== null && b.sd !== null) C.push(`音ありのときのばらつき ${a.sd.toFixed(0)} ms に対して、自分だけでは ${b.sd.toFixed(0)} ms でした。`);
+  }
+  if(mode.id === 'c_rubato'){
+    const A = stats(res.filter(r => r.group === '速くなるところ')), Dn = stats(res.filter(r => r.group === '遅くなるところ'));
+    if(A.mean !== null) K.push({k:'速くなるところ', v:fmt(A.mean), u:'ms', sub: A.mean > 15 ? '置いていかれがち' : A.mean < -15 ? '先走りがち' : 'ついていけている', bad:Math.abs(A.mean) > 15, next: A.mean > 15 ? '速くなるところは、伴奏の流れを先読みして前へ' : '速くなる勢いに乗りすぎない'});
+    if(Dn.mean !== null) K.push({k:'遅くなるところ', v:fmt(Dn.mean), u:'ms', sub: Dn.mean < -15 ? '待ちきれず早く出がち' : Dn.mean > 15 ? '遅れすぎ' : 'ついていけている', bad:Math.abs(Dn.mean) > 15, next: Dn.mean < -15 ? '遅くなるところでは、伴奏を「待って」から置く' : '遅くなる流れに合わせて、少し前へ'});
+    C.push('速くなるところで遅れ（＋）、遅くなるところで早め（−）になるのは、テンポの変化に耳が追いつく前に、前のテンポのまま叩いているためです。');
+  }
+  if(mode.id === 'c_dotted'){
+    const sh = res.filter(r => r.group === '短い音' && r.d !== null);
+    [...new Set(sh.map(r => r.R))].forEach(R => {
+      const xs = sh.filter(r => r.R === R).map(r => (r.tapT - r.unitT)/r.U); if(xs.length < 3) return;
+      const f = xs.reduce((a,b)=>a+b,0)/xs.length, ratio = f/(1 - f), s0 = R/(R+1);
+      K.push({k:`あなたの比（目標 ${R}:1）`, v:ratio.toFixed(1) + ' : 1', sub: Math.abs(f - s0) < 0.03 ? '目標どおり' : f < s0 ? '短い音が早すぎる' : '短い音が遅すぎる', bad:Math.abs(f - s0) >= 0.03,
+        next: f < s0 ? '長い音をもっと保って、短い音を待ってから置く' : '短い音を少しだけ早めに'});
+      C.push(`目標 ${R}:1 のところで、あなたの短い音は1組の長さの ${(f*100).toFixed(0)}% の位置（目標 ${(s0*100).toFixed(0)}%）、比にすると ${ratio.toFixed(1)} : 1 でした。`);
+    });
+  }
+  if(mode.id === 'c_hemiola'){
+    const Hm = stats(res.filter(r => r.group === 'ヘミオラ')), Nm = stats(res.filter(r => r.group === '3拍子の小節'));
+    if(Hm.mean !== null) K.push({k:'ヘミオラの小節', v:fmt(Hm.mean), u:'ms', sub:`ばらつき ${Hm.sd.toFixed(0)} ms・叩けた ${Hm.n}/${Hm.N}`, bad:Hm.hit < 0.8 || Hm.sd > 30, next:'ヘミオラでは2拍ずつの大きなまとまりを感じて'});
+    if(Hm.N && Nm.N && Hm.hit < Nm.hit - 0.15) C.push('ヘミオラの小節で叩けなかった音が多めです。「1・3・(次の)2」の位置を、お手本ありで確かめてみてください。');
+  }
+  if(mode.id === 'c_meter'){
+    const Lg = stats(res.filter(r => r.group.startsWith('長い拍'))), Sh = stats(res.filter(r => r.group.startsWith('短い拍')));
+    if(Lg.mean !== null && Sh.mean !== null){
+      const d = Lg.mean - Sh.mean;
+      K.push({k:'長い拍のあと − 短い拍のあと', v:fmt(d), u:'ms', sub: d < -15 ? '3つ分の拍を詰めている' : d > 15 ? '3つ分の拍を伸ばしている' : '長短を正しく保てている', bad:Math.abs(d) > 15,
+        next: d < -15 ? '3つ分の拍は「タ・ン・ン」と最後まで数えてから次へ' : '3つ分の拍を伸ばしすぎない'});
+      C.push(`長い拍（8分3つ）のあとの音は、短い拍のあとより平均 ${fmt(d)} ms。マイナスなら長い拍を短く詰めていることを意味します。`);
+    }
+  }
+  if(mode.id === 'c_entry'){
+    const E = stats(res.filter(r => r.group === '入り（1拍目）')), Pk = stats(res.filter(r => r.group.startsWith('アウフタクト')));
+    if(E.mean !== null) K.push({k:'入り（1拍目）', v:fmt(E.mean), u:'ms', sub:`ばらつき ${E.sd.toFixed(0)} ms・${E.n}/${E.N}回`, bad:Math.abs(E.mean) > 30 || E.sd > 40,
+      next: E.mean < -30 ? '予備拍の玉が下りきる瞬間まで待つ' : E.mean > 30 ? '玉が下りてくる勢いに合わせて、少し早めに準備' : '毎回同じように入れるよう、予備拍の速さをよく見る'});
+    if(Pk.mean !== null) K.push({k:'アウフタクト', v:fmt(Pk.mean), u:'ms', sub:`ばらつき ${Pk.sd.toFixed(0)} ms`, bad:Math.abs(Pk.mean) > 30});
+    const after = stats(res.filter(r => r.group === '入ったあと'));
+    if(after.mean !== null) C.push(`入ったあとの3拍は平均 ${fmt(after.mean)} ms。テンポを予備拍から正しく読めていれば、入ったあとも合い続けます。`);
+  }
+  if(mode.id === 'echo'){
+    if(plan.echo && plan.echo.auto) C.push(`レベルは Lv${plan.echo.startLv} から始めて、最後は Lv${plan.echo.lv}（最高 Lv${plan.echo.maxLv}）でした。`);
+    const perfectRounds = plan.rounds.filter((_, ri) => { const r = res.filter(x => x.round === ri); return r.every(x => x.d !== null && Math.abs(x.d) <= 70); }).length;
+    const exR = plan.rounds.map(rd => extras.filter(e => e.t >= rd.t0 - 0.1 && e.t < rd.t0 + 240/plan.bpm).length);
+    C.push(`リズムを正しく叩き返せたラウンド：${perfectRounds} / ${plan.rounds.length}（全部の音が ±70 ms 以内）。`);
+    K.push({k:'正しく叩き返せた', v:`${perfectRounds}/${plan.rounds.length}`, u:'ラウンド'});
+    if(plan.echo && plan.echo.auto) K.push({k:'レベル', v:`${plan.echo.startLv} → ${plan.echo.lv}`, sub:`最高 Lv${plan.echo.maxLv}`});
+    const exTotal = exR.reduce((a,b)=>a+b,0);
+    if(exTotal) C.push(`余分に叩いた音が ${exTotal} 個あります（下の表の ×）。`);
+  }
+  // step progress
+  $('#nextStepBtn').style.display = 'none';
+  if(mode.steps && curStep !== null){
+    const best = stepBest(), sc = Math.round(st.score), prev = best[curStep];
+    best[curStep] = Math.max(prev || 0, sc); store.set('rd.stepbest.' + mode.id, best);
+    const cleared = sc >= 80;
+    K.unshift({k:`ステップ ${curStep+1}`, v: cleared ? 'クリア！' : 'もう一息', sub: cleared ? (curStep + 1 < mode.steps.length ? '次のステップへ進めます' : '全ステップ完了！') : '80点でクリア', small:true, bad:!cleared});
+    if(cleared && curStep + 1 < mode.steps.length){
+      const nb = $('#nextStepBtn'), ni = curStep + 1;
+      nb.style.display = ''; nb.textContent = `次のステップ ${ni+1}：${mode.steps[ni].title}${mode.steps[ni].sub ? '（' + mode.steps[ni].sub + '）' : ''}へ ▶`;
+      nb.onclick = () => { applyStep(ni); startMode(); };
+    }
+  }
+  // headline + next goal
+  let head = '', next = '';
+  if(st.mean === null){ head = '判定できる打鍵がありませんでした'; next = 'テンポを落として、もう一度やってみましょう'; }
+  else if(st.hit < 0.8){ head = '叩けていない音が多め'; next = 'テンポを落として、まず全部の音を叩くことを目標に'; }
+  else if(st.sd >= 30){ head = '1打ごとの揺れが大きめ'; next = '平均より揺れを減らすのが先。ばらつき 20 ms 以下が目標'; }
+  else if(Math.abs(st.mean) >= 15){ head = st.mean > 0 ? '全体に遅れ気味' : '全体に前のめり'; next = st.mean > 0 ? 'ほんの少し早めに置く意識で' : '音を「待って」から置く意識で'; }
+  else if(lateGroup){ head = `「${lateGroup[0]}」が遅れがち`; next = '細分を均等に。遅れる位置を意識して'; }
+  else if(K.some(k => k.bad)){ const b = K.find(k => k.bad); head = `${b.k}：${b.v}${b.u || ''}（${b.sub}）`; next = b.next || 'この数字を目標に近づけましょう'; }
+  else if(st.sd < 15){ head = 'とても安定しています'; next = 'テンポを変えるか、難しい設定に進みましょう'; }
+  else { head = '安定しています'; next = 'ばらつき 15 ms 以下を目指しましょう'; }
+  const mPos = st.mean === null ? 50 : 50 + Math.max(-60, Math.min(60, st.mean))/60*50;
+  const sPos = st.sd === null ? 0 : (40 - Math.max(5, Math.min(40, st.sd)))/35*100;
+  $('#summary').insertAdjacentHTML('beforeend', K.map(k => `<div class="stat${k.bad ? ' bad' : ''}"><div class="k">${k.k}</div><div class="v${k.small ? ' sm' : ''}">${k.v} <small>${k.u || ''}</small></div>${k.sub ? `<div class="k">${k.sub}</div>` : ''}</div>`).join(''));
+  $('#headline').innerHTML = `<div class="hd">${head}</div><div class="nx">次の目標：${next}</div>`;
+  $('#gauges').innerHTML = st.mean === null ? '' : `
+    <div class="gauge"><div class="gl">タイミングの位置 <b>${fmt(st.mean)} ms</b></div>
+      <div class="gbar pos"><span class="gc"></span><span class="gm" style="left:${mPos}%"></span></div>
+      <div class="gs"><span>← 前のめり</span><span>ちょうど</span><span>遅れ →</span></div></div>
+    <div class="gauge"><div class="gl">安定度（ばらつき） <b>${st.sd.toFixed(0)} ms</b></div>
+      <div class="gbar stab"><span class="gm" style="left:${sPos}%"></span></div>
+      <div class="gs"><span>揺れ大</span><span>ふつう</span><span>安定</span><span>とても安定</span><span>上級</span></div></div>`;
+  $('#comments').innerHTML = C.map(c => `<li>${c}</li>`).join('');
+  // group table
+  $('#groups').innerHTML = gst.length > 1 ? groupChart(gst) : '';
+  // extra (echo)
+  $('#extra').innerHTML = mode.id === 'echo' ? echoTable(plan, res, extras) : '';
+  show('result');
+  $('#shadeLbl').textContent = plan.shade.length ? `灰色の帯は${plan.shadeLabel || ({echo:'「聴く」小節', c_dotted:'お手本の小節', p_sync:'お手本の小節', p_latin:'お手本の1周', poly:'ガイド少なめの区間', j_feel:'レイドバックの区間', j_over:'ガイドなしの区間', j_comp:'お手本の小節'}[mode.id]) || '無音区間'}。` : '';
+  drawChart($('#chart'), plan, res);
+  // history
+  const H = store.get('rd.hist', {});
+  const d = new Date();
+  (H[mode.id] = H[mode.id] || []).unshift({d:`${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`,
+    label:plan.label, score:Math.round(st.score), hit:Math.round(st.hit*100), mean:st.mean===null?null:Math.round(st.mean), sd:st.sd===null?null:Math.round(st.sd)});
+  H[mode.id] = H[mode.id].slice(0, 30); store.set('rd.hist', H);
+  renderHist();
+}
+function groupChart(gst){
+  const ok = gst.filter(([,s]) => s.mean !== null);
+  const need = Math.max(40, ...ok.map(([,s]) => Math.abs(s.mean) + s.sd));
+  const R = Math.min(120, Math.ceil(need/20)*20);
+  const x = v => (Math.max(-R, Math.min(R, v)) + R) / (2*R) * 100;
+  const col = sd => sd < 15 ? '#7cc9a6' : sd < 25 ? '#b9dc8f' : sd < 40 ? '#f2d27a' : '#f0a868';
+  const zeroLbl = mode.id === 'j_feel' ? '狙った位置' : 'ちょうど';
+  let h = `<div class="gc-head"><span class="gc-l">区分ごと</span><div class="gc-axis"><span style="left:0">−${R}</span><span style="left:25%">← 前のめり</span><span style="left:50%">${zeroLbl}</span><span style="left:75%">遅れ →</span><span style="left:100%">+${R}</span></div><span class="gc-n"></span></div>`;
+  gst.forEach(([g, s]) => {
+    const bar = s.mean === null ? '<span class="gc-none">叩けた音なし</span>' :
+      `<span class="gc-band" style="left:${x(s.mean - s.sd)}%;width:${x(s.mean + s.sd) - x(s.mean - s.sd)}%;background:${col(s.sd)}"></span><span class="gc-dot" style="left:${x(s.mean)}%"></span>`;
+    h += `<div class="gc-row"><span class="gc-l">${g}<small>${s.n}/${s.N} 打</small></span>
+      <div class="gc-track"><span class="gc-zero"></span>${bar}</div>
+      <span class="gc-n">${s.mean === null ? '' : `<b>${fmt(s.mean)}</b> ms<br><small>ばらつき ${s.sd.toFixed(0)}</small>`}</span></div>`;
+  });
+  h += `<div class="gc-note">● ＝平均の位置、色の帯＝ばらつきの幅（平均±標準偏差）。帯が短く緑に近いほど安定しています。</div>`;
+  return h;
+}
+function echoTable(plan, res, extras){
+  const spb = 60/plan.bpm;
+  let h = '<h2 style="font-size:15px;margin:6px 0">ラウンドごとの叩き返し</h2><div class="hint" style="margin-bottom:6px">縦線＝正しい位置、●＝あなたが叩いた位置、○＝叩けなかった音、×＝余分な音</div>';
+  plan.rounds.forEach((rd, ri) => {
+    const beats = [0,1,2,3].map(() => []);
+    res.filter(r => r.round === ri).forEach(r => {
+      const bi = Math.floor(r.pos + 1e-6), f = r.pos - bi;
+      beats[bi].push(`<span class="mk tg" style="left:${f*100}%"></span>`);
+      if(r.d === null) beats[bi].push(`<span class="mk miss" style="left:${f*100}%"></span>`);
+      else { const tp = (r.tapT - rd.t0)/spb, b2 = Math.min(3, Math.max(0, Math.floor(tp))), f2 = tp - b2;
+        beats[b2].push(`<span class="mk" style="left:${Math.max(0,Math.min(100,f2*100))}%;background:${GCOL[gradeOf(r.d)]}"></span>`); }
+    });
+    extras.filter(e => e.t >= rd.t0 - 0.1 && e.t < rd.t0 + 4*spb).forEach(e => {
+      const tp = (e.t - rd.t0)/spb, b2 = Math.min(3, Math.max(0, Math.floor(tp))), f2 = tp - b2;
+      beats[b2].push(`<span class="mk extra" style="left:${Math.max(0,Math.min(100,f2*100))}%">×</span>`);
+    });
+    h += `<div class="echo-round"><span class="rn">${ri+1}${rd.lv ? `<br><small>Lv${rd.lv}</small>` : ''}</span><span class="echo-pat">${rd.txt}</span><div class="echo-bar">${beats.map(b => `<div class="echo-beat">${b.join('')}</div>`).join('')}</div></div>`;
+  });
+  return h;
+}
+function drawChart(cv, plan, res){
+  const W = cv.clientWidth || 800, H = 260, dpr = window.devicePixelRatio || 1;
+  cv.width = W*dpr; cv.height = H*dpr;
+  const g = cv.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0);
+  g.clearRect(0,0,W,H);
+  if(!res.length) return;
+  const L = 46, R = 12, T = 22, B = 26;
+  const tMin = res[0].t - 0.3, tMax = res[res.length-1].t + 0.3;
+  const hits = res.filter(r => r.d !== null);
+  const maxA = Math.max(60, ...hits.map(r => Math.abs(r.d)));
+  const Y = Math.min(200, Math.ceil(maxA/20)*20);
+  const x = t => L + (t - tMin)/(tMax - tMin)*(W - L - R);
+  const y = d => T + (1 - (Math.max(-Y, Math.min(Y, d)) + Y)/(2*Y))*(H - T - B);
+  g.font = '11px sans-serif';
+  // bands (sections)
+  plan.bands.forEach((b, i) => {
+    if(i % 2){ g.fillStyle = '#f4f2fb'; g.fillRect(x(b.t0), T, x(b.t1) - x(b.t0), H - T - B); }
+    g.fillStyle = '#5a5f80'; g.textAlign = 'center'; g.fillText(b.label, (x(Math.max(b.t0,tMin)) + x(Math.min(b.t1,tMax)))/2, 14);
+  });
+  plan.shade.forEach(s => { g.fillStyle = 'rgba(120,120,120,.12)'; const a = Math.max(x(s.t0), L), z = Math.min(x(s.t1), W - R); if(z > a) g.fillRect(a, T, z - a, H - T - B); });
+  // tolerance bands
+  g.fillStyle = 'rgba(42,157,111,.10)'; g.fillRect(L, y(20), W - L - R, y(-20) - y(20));
+  g.fillStyle = 'rgba(134,179,58,.07)'; g.fillRect(L, y(40), W - L - R, y(20) - y(40)); g.fillRect(L, y(-20), W - L - R, y(-40) - y(-20));
+  // grid
+  const step = Y <= 60 ? 20 : Y <= 120 ? 40 : 50;
+  g.strokeStyle = '#ece7de'; g.fillStyle = '#888'; g.textAlign = 'right'; g.lineWidth = 1;
+  for(let v = -Math.floor(Y/step)*step; v <= Y; v += step){
+    g.beginPath(); g.moveTo(L, y(v)); g.lineTo(W - R, y(v)); g.stroke();
+    g.fillText((v > 0 ? '+' : '') + v, L - 6, y(v) + 4);
+  }
+  g.strokeStyle = '#999'; g.beginPath(); g.moveTo(L, y(0)); g.lineTo(W - R, y(0)); g.stroke();
+  g.save(); g.translate(12, (T + H - B)/2); g.rotate(-Math.PI/2); g.textAlign = 'center'; g.fillStyle = '#888'; g.fillText('ずれ (ms)  ↑遅い / 早い↓', 0, 0); g.restore();
+  // moving average per layer
+  const layers = [...new Set(res.map(r => r.layer))];
+  layers.forEach(Lr => {
+    const h = hits.filter(r => r.layer === Lr);
+    if(h.length < 5) return;
+    g.strokeStyle = Lr === 0 ? 'rgba(61,74,143,.75)' : 'rgba(192,57,43,.65)'; g.lineWidth = 2; g.beginPath();
+    h.forEach((r, i) => {
+      const s = h.slice(Math.max(0, i-4), i+1); const m = s.reduce((a,b)=>a+b.d,0)/s.length;
+      i ? g.lineTo(x(r.t), y(m)) : g.moveTo(x(r.t), y(m));
+    });
+    g.stroke();
+  });
+  // dots
+  res.forEach(r => {
+    if(r.d === null){
+      g.strokeStyle = GCOL.miss; g.lineWidth = 2; const cx = x(r.t), cy = H - B + 12;
+      g.beginPath(); g.moveTo(cx-4, cy-4); g.lineTo(cx+4, cy+4); g.moveTo(cx+4, cy-4); g.lineTo(cx-4, cy+4); g.stroke();
+      return;
+    }
+    g.fillStyle = GCOL[gradeOf(r.d)];
+    g.beginPath();
+    if(r.layer === 1) g.rect(x(r.t) - 4, y(r.d) - 4, 8, 8); else g.arc(x(r.t), y(r.d), 4.5, 0, Math.PI*2);
+    g.fill();
+  });
+}
+function renderHist(){
+  const H = store.get('rd.hist', {})[mode.id] || [];
+  if(mode.quiz){
+    const q = store.get('rd.quiz', []);
+    $('#hist').innerHTML = q.length ? '<table class="hist"><tr><th>日時</th><th>出題数</th><th>正解</th><th>到達した変化の大きさ</th></tr>' +
+      q.slice(0,8).map(r => `<tr><td>${r.d}</td><td>${r.n}</td><td>${r.ok}</td><td>${r.best}%</td></tr>`).join('') + '</table>' : 'まだ記録がありません。';
+    return;
+  }
+  $('#hist').innerHTML = H.length ? '<table class="hist"><tr><th>日時</th><th>内容</th><th>スコア</th><th>叩けた音</th><th>平均ずれ</th><th>ばらつき</th></tr>' +
+    H.slice(0,8).map(r => `<tr><td>${r.d}</td><td style="text-align:left">${r.label}</td><td>${r.score}</td><td>${r.hit}%</td><td>${r.mean===null?'—':fmt(r.mean)}</td><td>${r.sd===null?'—':r.sd}</td></tr>`).join('') + '</table>'
+    : 'まだ記録がありません。';
+}
+
+/* ================= Tempo quiz ================= */
+const QLEVELS = [10, 7, 5, 3.5, 2.5, 1.8, 1.2, 0.8];
+const Q = {lv:1, streak:0, n:0, ok:0, best:null, cur:null, playing:false, log:[]};
+function renderQuiz(){
+  $('#quiz').innerHTML = `
+    <div class="startrow" style="margin-bottom:6px">
+      <button class="btn primary" id="qPlay">問題を再生（<kbd>Enter</kbd>）</button>
+      <button class="btn" id="qReplay">もう一度聴く</button>
+      <button class="btn small" id="qEnd">記録して終える</button>
+      <span class="hint">今の変化の大きさ：<b id="qLv"></b>　出題 <b id="qN"></b>・正解 <b id="qOk"></b></span>
+    </div>
+    <div class="hint">最初の4拍は一定、そのあと12拍のあいだに変化します。答えは <kbd>←</kbd> 遅くなった／<kbd>↓</kbd> 変わらない／<kbd>→</kbd> 速くなった でも入力できます。</div>
+    <div class="qbtns">
+      <button class="btn" data-ans="-1">遅くなった</button>
+      <button class="btn" data-ans="0">変わらない</button>
+      <button class="btn" data-ans="1">速くなった</button>
+    </div>
+    <div id="qMsg"></div>
+    <div class="qlog" id="qLog"></div>`;
+  $('#qPlay').onclick = () => quizNew();
+  $('#qReplay').onclick = () => { if(Q.cur) quizPlay(Q.cur); };
+  $('#qEnd').onclick = quizEnd;
+  document.querySelectorAll('[data-ans]').forEach(b => b.onclick = () => quizAnswer(+b.dataset.ans));
+  quizStatus();
+}
+function quizStatus(){
+  if(!$('#qLv')) return;
+  $('#qLv').textContent = QLEVELS[Q.lv] + '%'; $('#qN').textContent = Q.n; $('#qOk').textContent = Q.ok;
+  $('#qLog').innerHTML = Q.log.slice(-12).map(l => `<span class="${l.ok?'ok-t':'ng-t'}">${l.ok?'○':'×'}</span> ${l.txt}`).join('　');
+}
+function quizNew(){
+  const o = getOpts();
+  const dir = [-1,0,1][Math.floor(Math.random()*3)];
+  const base = o.bpm * (1 + (Math.random()*0.1 - 0.05));
+  Q.cur = {dir, base, pct:QLEVELS[Q.lv], answered:false};
+  $('#qMsg').textContent = '聴いて答えてください';
+  quizPlay(Q.cur);
+}
+function quizPlay(q){
+  ac(); newMaster();
+  let t = ctx.currentTime + 0.2;
+  const N = 16;
+  for(let i=0;i<N;i++){
+    playSound(t, i % 4 === 0 ? 'accent' : 'beat');
+    const k = i < 4 ? 0 : (i - 3)/(N - 4);   // ramp after 4 steady beats
+    const bpm = q.base * (1 + q.dir * q.pct/100 * Math.min(1, k));
+    t += 60/bpm;
+  }
+}
+function quizAnswer(a){
+  const q = Q.cur; if(!q || q.answered) return;
+  q.answered = true; Q.n++;
+  const name = {'-1':'遅くなった','0':'変わらない','1':'速くなった'};
+  const ok = a === q.dir;
+  if(ok){ Q.ok++; Q.streak++; if(Q.best === null || q.pct < Q.best) Q.best = q.pct;
+    if(Q.streak >= 2 && Q.lv < QLEVELS.length - 1){ Q.lv++; Q.streak = 0; } }
+  else { Q.streak = 0; if(Q.lv > 0) Q.lv--; }
+  $('#qMsg').innerHTML = ok ? `<span class="ok-t">正解！</span>（${name[q.dir]}・${q.pct}%）　<kbd>Enter</kbd> で次へ`
+    : `<span class="ng-t">ちがいます。</span>正解は「${name[q.dir]}」（${q.pct}%）。「もう一度聴く」で確かめられます。`;
+  Q.log.push({ok, txt:`${q.pct}%`});
+  quizStatus();
+}
+function quizEnd(){
+  if(Q.n){
+    const d = new Date(), arr = store.get('rd.quiz', []);
+    arr.unshift({d:`${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`, n:Q.n, ok:Q.ok, best:Q.best ?? '—'});
+    store.set('rd.quiz', arr.slice(0,30));
+  }
+  Object.assign(Q, {lv:1, streak:0, n:0, ok:0, best:null, cur:null, log:[]});
+  $('#qMsg').textContent = '記録しました。';
+  quizStatus(); renderHist();
+}
+
+/* ================= Calibration ================= */
+function calibPlan(){
+  const bpm = 100, spb = 0.6, p = Plan(bpm);
+  addBar(p, 0, 4, spb);
+  p.segments.push({t:0, text:'カウント（聴くだけ）', sub:'次の小節から16回、クリックに合わせて叩く'});
+  p.segments.push({t:4*spb, text:'クリックに合わせて', sub:'いつもどおり自然に'});
+  for(let b=1;b<=4;b++){ addBar(p, b*4*spb, 4, spb);
+    for(let i=0;i<4;i++) p.targets.push({t:(b*4+i)*spb, layer:0, win:0.25}); }
+  p.dur = 20*spb; return p;
+}
+function runCalib(){
+  $('#calibPanel').style.display = 'none';
+  startSession(calibPlan(), {calibOverride:0, help:'クリックに合わせて、いつもどおり自然に叩きます（16回）。', onDone:(ev) => {
+    const ds = ev.res.slice(2).filter(r => r.d !== null).map(r => r.d).sort((a,b)=>a-b);
+    show('setup'); $('#calibPanel').style.display = 'block';
+    if(ds.length < 8){ $('#calibMsg').textContent = '叩けた数が少なすぎました。もう一度測ってください。'; return; }
+    const med = ds[Math.floor(ds.length/2)];
+    const sd = Math.sqrt(ds.reduce((a,b)=>a+(b-med)**2,0)/ds.length);
+    calib = Math.round(med); store.set('rd.calib', calib); updateCalibBtn();
+    $('#calibMsg').textContent = `補正値を ${fmt(calib)} ms にしました（ばらつき ${sd.toFixed(0)} ms）。` + (sd > 35 ? 'ばらつきが大きいので、もう一度測るのがおすすめです。' : '');
+    renderSetup();
+  }});
+}
+
+/* ================= Wiring ================= */
+let currentPlan = null;
+function startMode(){
+  resetWalk(); cReset();
+  if(mode.quiz) return;
+  const o = getOpts();
+  currentPlan = mode.build(o);
+  if(mode.steps && curStep !== null) currentPlan.label = `ステップ${curStep+1}：` + currentPlan.label;
+  startSession(currentPlan);
+}
+$('#startBtn').onclick = startMode;
+$('#againBtn').onclick = startMode;
+$('#backBtn').onclick = () => { show('setup'); renderSetup(); };
+$('#stopBtn').onclick = () => { stopSession(); show('setup'); renderSetup(); };
+$('#calibBtn').onclick = () => { const p = $('#calibPanel'); p.style.display = p.style.display === 'block' ? 'none' : 'block'; updateCalibBtn(); };
+$('#calibClose').onclick = () => $('#calibPanel').style.display = 'none';
+$('#calibRun').onclick = runCalib;
+$('#calibZero').onclick = () => { calib = 0; store.set('rd.calib', 0); updateCalibBtn(); renderSetup(); };
+document.querySelectorAll('[data-adj]').forEach(b => b.onclick = () => { calib = (calib || 0) + (+b.dataset.adj); store.set('rd.calib', calib); updateCalibBtn(); renderSetup(); });
+
+const POLY_L = new Set(['KeyF','KeyD','KeyS','KeyA']), POLY_R = new Set(['KeyJ','KeyK','KeyL','Semicolon']);
+document.addEventListener('keydown', e => {
+  if(sess && sess.running){
+    if(e.key === 'Escape'){ stopSession(); show('setup'); renderSetup(); return; }
+    if(e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+    if(['Shift','Control','Alt','Meta','Tab','CapsLock'].includes(e.key)) return;
+    e.preventDefault();
+    if(sess.plan.layers.length > 1){
+      if(POLY_L.has(e.code)) tap(0, e.timeStamp);
+      else if(POLY_R.has(e.code)) tap(1, e.timeStamp);
+    } else tap(0, e.timeStamp);
+    return;
+  }
+  const tag = (e.target && e.target.tagName) || '';
+  if(e.key === 'Enter' && !e.repeat){
+    if(tag === 'SELECT' || tag === 'INPUT') { e.target.blur(); }
+    if(mode.quiz){ if($('#setup').style.display !== 'none'){ e.preventDefault(); quizNew(); } return; }
+    if($('#setup').style.display !== 'none' || $('#result').style.display !== 'none'){ e.preventDefault(); startMode(); }
+    return;
+  }
+  if(mode.quiz && Q.cur && !Q.cur.answered && tag !== 'INPUT'){
+    if(e.key === 'ArrowLeft'){ e.preventDefault(); quizAnswer(-1); }
+    if(e.key === 'ArrowDown'){ e.preventDefault(); quizAnswer(0); }
+    if(e.key === 'ArrowRight'){ e.preventDefault(); quizAnswer(1); }
+  }
+});
+window.addEventListener('resize', () => { if($('#result').style.display !== 'none' && lastResult) drawChart($('#chart'), lastResult.plan, lastResult.res); });
+let lastResult = null;
+const _rr = renderResult;
+renderResult = function(plan, ev){ lastResult = {plan, res:ev.res}; _rr(plan, ev); };
+
+$('#tapSel').innerHTML = TAP_KINDS.map(([k,l]) => `<option value="${k}"${k === tapKind ? ' selected' : ''}>${l}</option>`).join('');
+$('#tapSel').onchange = e => { tapKind = e.target.value; store.set('rd.tapkind', tapKind); if(tapKind !== 'none'){ ac(); const t = ctx.currentTime + 0.05; percussion(t, tapKind, 0); percussion(t + 0.25, tapKind, 0); percussion(t + 0.5, tapKind, 1); } e.target.blur(); };
+renderTabs(); renderSetup(); updateCalibBtn(); show('setup');
+</script>
+</body>
+</html>

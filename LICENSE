@@ -1,0 +1,42 @@
+Copyright (c) 2026 jun. All rights reserved.
+
+【日本語】
+
+リズム道場（Rhythm Dojo）のソースコード、画面の文章、練習メニューと練習ステップの構成、
+リズムパタンの選び方と並べ方、合成音の設計の著作権は jun にあります。
+
+公開しているサイトでは、誰でも無料でこのアプリを使えます。
+個人の練習のほか、授業やレッスンでの利用も含みます。
+
+ソースコードは見られるように公開していますが、オープンソースではありません。
+複製、改変、再配布、販売、およびこのアプリを元にした別のアプリやサービスの公開には、
+著作権者の許可が必要です。
+
+このアプリは他者の著作物（ライブラリ、フォント、画像、録音された音源など）を同梱していません。
+詳しくは THIRD_PARTY_NOTICES.md を参照してください。
+
+アプリの中のリズムパタン（クラーベ、ボサノヴァ、6/8 のベルパタンなど）や和声進行は、
+伝統的・慣用的な型をもとに作者が組み立てたもので、他人の作品の旋律や歌詞は収めていません。
+状態は README を参照してください。
+
+
+[English]
+
+The source code, on-screen text, structure of the practice modes and steps,
+selection and arrangement of rhythm patterns, and the design of the synthesized
+sounds of Rhythm Dojo are copyright of jun.
+
+Anyone may use this app free of charge on the published site,
+including for personal practice and for use in classes or lessons.
+
+The source code is publicly viewable, but this is not open-source software.
+Copying, modifying, redistributing, or selling this app, or publishing another
+app or service based on it, requires permission from the copyright holder.
+
+This app does not bundle third-party works (libraries, fonts, images, recorded
+audio, etc.). See THIRD_PARTY_NOTICES.md for details.
+
+The rhythm patterns (clave, bossa nova, 6/8 bell pattern, etc.) and chord
+progressions in the app were assembled by the author from traditional and
+conventional forms; no melodies or lyrics from other people's works are
+included. See README for their status.
