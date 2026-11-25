@@ -4,7 +4,7 @@ stage: 試作          # 構想 / 試作 / 公開中 / 保守
 url:                 # 未公開。GitHub Pages は無効(2026-11-26 確認)。ソースは GitHub cellish/rhythm-dojo、Claude のアーティファクト版がある
 updated: 2026-11-26
 os:                  # 対応 / 一部制限 / 非対応 / 未確認
-  macos: 対応
+  macos: 未確認
   ios: 未確認        # iPadOS を含む
   windows: 未確認
   android: 未確認
@@ -35,5 +35,5 @@ os:                  # 対応 / 一部制限 / 非対応 / 未確認
 ## OS / ブラウザ対応状況
 - macOS: Chrome 対応(ヘッドレス Chrome で表示を確認。合成音を聴いての調整は未了。2026-11 確認) / Safari 未確認
 - iOS / iPadOS: 未確認(スマホは画面のパッドで叩く。実機確認は PLAN にある。マナーモードでは音が出なくてよい仕様)
-- Windows: Chrome / Edge 未確認
+- Windows: Chrome 未確認
 - Android: Chrome 未確認
