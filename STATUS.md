@@ -1,7 +1,7 @@
 ---
 app: リズム道場(Rhythm Dojo)
 stage: 試作          # 構想 / 試作 / 公開中 / 保守
-url:                 # GitHub(cellish/rhythm-dojo)と Claude のアーティファクト版がある。公開URLは文書に記載がなく未確認
+url:                 # 未公開。GitHub Pages は無効(2026-11-26 確認)。ソースは GitHub cellish/rhythm-dojo、Claude のアーティファクト版がある
 updated: 2026-11-26
 ---
 ## 実装済み（要約）
