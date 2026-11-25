@@ -3,6 +3,11 @@ app: リズム道場(Rhythm Dojo)
 stage: 試作          # 構想 / 試作 / 公開中 / 保守
 url:                 # 未公開。GitHub Pages は無効(2026-11-26 確認)。ソースは GitHub cellish/rhythm-dojo、Claude のアーティファクト版がある
 updated: 2026-11-26
+os:                  # 対応 / 一部制限 / 非対応 / 未確認
+  macos: 対応
+  ios: 未確認        # iPadOS を含む
+  windows: 未確認
+  android: 未確認
 ---
 ## 実装済み（要約）
 - キーボード(スマホは画面のパッド)で叩いてリズム感を練習するブラウザ用アプリ。`index.html` 1ファイル、音はすべて Web Audio で合成
@@ -27,8 +32,8 @@ updated: 2026-11-26
 - 音の合成(Web Audio): 独自実装
 - 結果の表示(カード・メーター・グラフ): 独自実装
 - 遅延補正: 独自実装
-## OS対応状況
-- macOS: 対応(ヘッドレス Chrome で表示を確認。キーボードで叩く)
+## OS / ブラウザ対応状況
+- macOS: Chrome 対応(ヘッドレス Chrome で表示を確認。合成音を聴いての調整は未了。2026-11 確認) / Safari 未確認
 - iOS / iPadOS: 未確認(スマホは画面のパッドで叩く。実機確認は PLAN にある。マナーモードでは音が出なくてよい仕様)
-- Windows: 未確認
-- Android: 未確認
+- Windows: Chrome / Edge 未確認
+- Android: Chrome 未確認
