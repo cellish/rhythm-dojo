@@ -30,7 +30,7 @@
 | `LICENSE` | 著作権表示（All rights reserved）、日英 |
 | `THIRD_PARTY_NOTICES.md` | 他者の著作物（同梱なし） |
 | `CLAUDE.md` | 開発の決まり |
-| `PROGRESS.md` | 進捗・決めたこと・残り |
+| `STATUS.md`・`PLAN.md` | 現状、未完了の作業（決めたことは `CLAUDE.md`） |
 | `docs/INVENTORY.md` | この文書 |
 
 `<script>` の中は `/* ===== 見出し ===== */` で区切られている：Audio（270行）、楽器音（362）、叩いた音（437）、Plan helpers（474）、Modes（489）、ジャズ編（867）、クラシック編（1206）、ポップス編（1435）、UI（1773）、Session engine（1896）、Evaluation（2020）、Results（2065）、Tempo quiz（2391）、Calibration（2464）、Wiring（2488）。
@@ -97,7 +97,7 @@
 | 楽譜表示 | なし | VexFlow 等は使っていない。リズムは ●・ の文字列で示す（`patText`, `grid16`, `compTxt`） |
 | MIDI入力 | なし | `requestMIDIAccess` の呼び出しはない |
 | 音の再生 | あり | Web Audio API で合成（下に詳細） |
-| マイク入力・音高判定 | なし | `getUserMedia` の呼び出しはない（PROGRESS.md で「後で考える」） |
+| マイク入力・音高判定 | なし | `getUserMedia` の呼び出しはない（`PLAN.md` で「決める」としている検討事項） |
 | 音程・コード・調の計算 | ほぼなし | `chordTones`（3度は 'm7' なら3半音、それ以外4半音）、`fitBass`（オクターブ移動）程度 |
 | 規則の判定と採点 | あり（タイミングのみ） | `evaluate`, `stats`, `gradeOf`, `slopeOf`（2021〜2064行） |
 | 課題・問題データ | あり | すべて `index.html` 内の JS 定数（下に詳細） |
@@ -200,7 +200,7 @@
 - リズム模倣の自動レベルは、判定が1ラウンド遅れて反映される（作りの都合）。
 - キーボードでは強弱が付けられないので、ゴーストノートは伴奏で聴くだけ。
 - 1ファイル 2544 行で、モードが増えるほど長くなる。
-- 音色（ピアノ、ドラム等）は合成のみで、実際に聴いての調整が済んでいない（PROGRESS.md）。
+- 音色（ピアノ、ドラム等）は合成のみで、実際に聴いての調整が済んでいない（`PLAN.md`）。
 
 ---
 
