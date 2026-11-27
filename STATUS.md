@@ -2,7 +2,7 @@
 app: リズム道場(Rhythm Dojo)
 stage: 試作          # 構想 / 試作 / 公開中 / 保守
 url:                 # 未公開。GitHub Pages は無効(2026-11-26 確認)。ソースは GitHub cellish/rhythm-dojo、Claude のアーティファクト版がある
-updated: 2026-11-26
+updated: 2026-11-27
 os:                  # 対応 / 一部制限 / 非対応 / 未確認
   macos: 未確認
   ios: 未確認        # iPadOS を含む
@@ -32,6 +32,7 @@ os:                  # 対応 / 一部制限 / 非対応 / 未確認
 - 音の合成(Web Audio): 独自実装
 - 結果の表示(カード・メーター・グラフ): 独自実装
 - 遅延補正: 独自実装
+- リズム・伴奏の型(`GROOVES`・`COMP_PATS`・`SW_PATTERNS`): 独自実装
 ## OS / ブラウザ対応状況
 - macOS: Chrome 対応(ヘッドレス Chrome で表示を確認。合成音を聴いての調整は未了。2026-11 確認) / Safari 未確認
 - iOS / iPadOS: 未確認(スマホは画面のパッドで叩く。実機確認は PLAN にある。マナーモードでは音が出なくてよい仕様)
